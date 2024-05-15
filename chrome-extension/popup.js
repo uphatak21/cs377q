@@ -100,5 +100,94 @@ document.addEventListener('DOMContentLoaded', () => {
         conversationHistory.length = 0; // Clear the array
         updateChatLog(); // Update the chat log to reflect the cleared history
     });
+
+    // Voice input functionality
+    // if (!('SpeechRecognition' in window) && !('webkitSpeechRecognition' in window)) {
+    //     console.error('Speech recognition not supported in this browser.');
+    //     return;
+    // }
+
+    // const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    // const recognition = new SpeechRecognition();
+    // recognition.continuous = false;
+    // recognition.interimResults = false;
+    // recognition.lang = 'en-US';
+
+    // recognition.onresult = (event) => {
+    //     const transcript = event.results[0][0].transcript;
+    //     console.log('Voice input recognized:', transcript);
+    //     document.getElementById('user-input').value = transcript;
+    //     sendMessage();
+    // };
+
+    // recognition.onerror = (event) => {
+    //     console.error('Speech recognition error', event);
+    // };
+
+    // recognition.onstart = () => {
+    //     console.log('Speech recognition started');
+    // };
+
+    // recognition.onend = () => {
+    //     console.log('Speech recognition ended');
+    // };
+
+    // document.getElementById('voice-btn').addEventListener('click', () => {
+    //     console.log('Starting speech recognition');
+    //     recognition.start();
+    // });
+
+    document.getElementById('voice-btn').addEventListener('click', async () => {
+        const messageDiv = document.getElementById('message');
+
+        try {
+            console.log('Requesting microphone access...');
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            console.log('Microphone access granted');
+            // messageDiv.textContent = 'Microphone access granted';
+
+            const recognition = new webkitSpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.onstart = () => console.log('Recognition started');
+            recognition.onerror = (event) => console.error('Recognition error:', event);
+            // recognition.onresult = (event) => console.log('Recognition result:', event);
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                console.log('Voice input recognized:', transcript);
+                document.getElementById('user-input').value = transcript;
+
+                // Automatically send the recognized text as a message
+                sendMessage();
+            };
+
+            // recognition.onresult = (event) => {
+            //     console.log('Recognition result:', event);
+
+            //     // Extract the recognized speech result
+            //     const speechResult = event.results[0][0].transcript;
+            //     console.log('Recognized Speech:', speechResult);
+
+            //     // Display the result in the message div
+            //     messageDiv.textContent = 'Recognition result: ' + speechResult;
+            // };
+            recognition.start();
+        } catch (err) {
+            if (err.name === 'NotAllowedError' || err.name === 'SecurityError') {
+                messageDiv.textContent = 'Microphone access denied. Please enable it in your browser settings.';
+            } else if (err.name === 'PermissionDismissedError') {
+                messageDiv.textContent = 'Microphone access dismissed. Please grant permission to use this feature.';
+            } else {
+                messageDiv.textContent = 'Error accessing the microphone: ' + err.message;
+            }
+            console.error('Error accessing the microphone', err);
+        }
+    });
+
+    document.getElementById('open-welcome').addEventListener('click', () => {
+        chrome.tabs.create({ url: chrome.runtime.getURL('welcome.html') });
+    });
+
+
+
 });
 
