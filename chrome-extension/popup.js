@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial update of the chat log on page load
     updateChatLog();
 
-    document.getElementById('send-btn').addEventListener('click', async () => {
+    async function sendMessage() {
         const userInput = document.getElementById('user-input').value;
 
         if (userInput) {
@@ -83,6 +83,14 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
                 botMessage.textContent = 'Error: ' + error.message;
             }
+        }
+    }
+
+    document.getElementById('send-btn').addEventListener('click', sendMessage);
+
+    document.getElementById('user-input').addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            sendMessage();
         }
     });
 
