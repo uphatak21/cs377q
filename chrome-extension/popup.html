@@ -43,6 +43,17 @@
             text-decoration: none;
             cursor: pointer;
         }
+        #listening-indicator {
+            display: none;
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background-color: #f39c12;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 1000;
+        }
   </style>
 </head>
 <body>
@@ -63,6 +74,7 @@
         <p>Welcome to Shopbot! We are here to help you shop. Please tell the chatbot what you want to purchase. You can include information like color, delivery date, price, and anything else you might filter for. The chatbot will redirect you to an Amazon page with relevant search results. Happy shopping!</p>
     </div>
   </div>
+  <div id="listening-indicator">Listening...</div>
   <script src="popup.js"></script>
 </body>
 </html>
