@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+    var chatInput = document.getElementById('user-input');
+    chatInput.focus();
+
     const chatLog = document.getElementById('chat-log');
     const conversationHistory = JSON.parse(localStorage.getItem('conversationHistory')) || [];
 

@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "Chatbot Extension",
+    "name": "Shopbot",
     "version": "1.0",
-    "description": "A simple chatbot Chrome extension using OpenAI's API.",
+    "description": "A GPT-powered Chrome extension to make Amazon shopping easier.",
     "action": {
       "default_popup": "popup.html",
       "default_icon": {
