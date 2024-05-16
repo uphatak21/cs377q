@@ -10,6 +10,14 @@
     border-bottom: 1px solid #ccc;
     margin-bottom: 10px;
   }
+
+  #instructions-text {
+    font-size: 16px;
+  }
+
+  #top-buttons {
+    float:right;
+  }
   
   .message {
     padding: 5px;

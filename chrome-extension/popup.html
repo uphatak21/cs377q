@@ -28,9 +28,9 @@
         width: 80%;
     }
     button {
-        background-color: #4CAF50; /* Green background */
+        /* background-color: #4CAF50; /* Green background */
         border: none; /* Remove borders */
-        color: white; /* White text */
+        /* color: white; /* White text */
         padding: 8px 16px; /* Some padding */
         text-align: center; /* Center the text */
         text-decoration: none; /* Remove underline */
@@ -67,13 +67,16 @@
   </style>
 </head>
 <body>
+  <div id="top-buttons">
+    <button id="instructions-button">i</button>
+    <button id="cart-button">Cart</button>
+  </div>
   <div id="chat-container">
     <div id="chat-log"></div>
     <input type="text" id="user-input" placeholder="Type a message...">
     <button id="send-btn">Send</button>
     <button id="voice-btn">Voice Input</button>
     <button id="clear-btn">Clear Chat</button>
-    <button id="instructions-button">Instructions</button>
     <button id="open-welcome">Grant Speech Permissions</button>
     <div id="message"></div>
   </div>
@@ -81,7 +84,7 @@
     <div id="instructions-content">
         <span class="close">&times;</span>
         <h2>Instructions</h2>
-        <p>Welcome to Shopbot! We are here to help you shop. Please tell the chatbot what you want to purchase. You can include information like color, delivery date, price, and anything else you might filter for. The chatbot will redirect you to an Amazon page with relevant search results. Happy shopping!</p>
+        <p id="instructions-text">Welcome to Shopbot! We are here to help you shop. Please tell the chatbot what you want to purchase. You can include information like color, delivery date, price, and anything else you might filter for. The chatbot will redirect you to an Amazon page with relevant search results. Happy shopping!</p>
     </div>
   </div>
   <div id="listening-indicator">Listening...</div>
