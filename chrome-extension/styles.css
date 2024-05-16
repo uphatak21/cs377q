@@ -17,11 +17,22 @@
   }
   
   .message.user {
-    background-color: #d1e7dd;
+    background-color: #c4eaec;
     text-align: right;
   }
   
   .message.bot {
-    background-color: #f8d7da;
+    background-color: #175e61;
   }
   
+  .user {
+    font-size: 20px;
+    color: #175e61;
+    font-family: "Noto Sans", sans-serif;
+  }
+
+  .bot {
+    font-size: 20px;
+    color: #c4eaec;
+    font-family: "Noto Sans", sans-serif;
+  }
