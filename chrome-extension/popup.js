@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+    var chatInput = document.getElementById('user-input');
+    chatInput.focus();
+
     const chatLog = document.getElementById('chat-log');
     const conversationHistory = JSON.parse(localStorage.getItem('conversationHistory')) || [];
 
@@ -32,7 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
             trained by OpenAI, based on the GPT-4o architecture.
             When a user tells you what they want, always produce an Amazon url for that item with the following form: "https://www.amazon.com/".
             The query parameters should go after the slash.
-            You also know all of the query parameters that correspond to the Amazon filters in the sidebar.`
+            You also know all of the query parameters that correspond to the Amazon filters in the sidebar.
+            You are also able to hear the user via a voice input.`
 
             // Send user input to OpenAI API
             const botMessage = document.createElement('div');
@@ -137,6 +141,14 @@ document.addEventListener('DOMContentLoaded', () => {
     //     recognition.start();
     // });
 
+    function startListening() {
+        document.getElementById('listening-indicator').style.display = 'block';
+    }
+
+    function stopListening() {
+        document.getElementById('listening-indicator').style.display = 'none';
+    }
+
     document.getElementById('voice-btn').addEventListener('click', async () => {
         const messageDiv = document.getElementById('message');
 
@@ -148,17 +160,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const recognition = new webkitSpeechRecognition();
             recognition.lang = 'en-US';
-            recognition.onstart = () => console.log('Recognition started');
+            // recognition.onstart = () => console.log('Recognition started');
+            recognition.onstart = () => startListening();
             recognition.onerror = (event) => console.error('Recognition error:', event);
             // recognition.onresult = (event) => console.log('Recognition result:', event);
             recognition.onresult = (event) => {
                 const transcript = event.results[0][0].transcript;
-                console.log('Voice input recognized:', transcript);
+                // console.log('Voice input recognized:', transcript);
                 document.getElementById('user-input').value = transcript;
-
                 // Automatically send the recognized text as a message
                 sendMessage();
             };
+
+            recognition.onend = () => stopListening();
+
 
             // recognition.onresult = (event) => {
             //     console.log('Recognition result:', event);
@@ -204,9 +219,6 @@ document.addEventListener('DOMContentLoaded', () => {
             instructionsModal.style.display = 'none';
         }
     }
-
-
-
 
 });
 

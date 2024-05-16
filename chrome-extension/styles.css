@@ -21,19 +21,17 @@
     text-align: right;
   }
   
-  .message.bot {
-    background-color: #093739;
-  }
+  /* .message.bot {
+    background-color: #175e61;
+  } */
   
   .user {
-    font-size: 20px;
-    color: #093739;
+    color: #175e61;
     font-family: "Noto Sans", sans-serif;
   }
 
   .bot {
-    font-size: 20px;
-    color: #e2f4f5;
+    /* color: #c4eaec; */
     font-family: "Noto Sans", sans-serif;
   }
 
