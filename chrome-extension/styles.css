@@ -17,22 +17,26 @@
   }
   
   .message.user {
-    background-color: #c4eaec;
+    background-color: #e2f4f5;
     text-align: right;
   }
   
   .message.bot {
-    background-color: #175e61;
+    background-color: #093739;
   }
   
   .user {
     font-size: 20px;
-    color: #175e61;
+    color: #093739;
     font-family: "Noto Sans", sans-serif;
   }
 
   .bot {
     font-size: 20px;
-    color: #c4eaec;
+    color: #e2f4f5;
     font-family: "Noto Sans", sans-serif;
+  }
+
+  .buttons {
+    color: green;
   }
