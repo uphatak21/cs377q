@@ -187,6 +187,25 @@ document.addEventListener('DOMContentLoaded', () => {
         chrome.tabs.create({ url: chrome.runtime.getURL('welcome.html') });
     });
 
+    var instructionsButton = document.getElementById('instructions-button');
+    var instructionsModal = document.getElementById('instructions-modal');
+    var closeButton = document.getElementsByClassName('close')[0];
+
+    instructionsButton.onclick = function () {
+        instructionsModal.style.display = 'block';
+    }
+
+    closeButton.onclick = function () {
+        instructionsModal.style.display = 'none';
+    }
+
+    window.onclick = function (event) {
+        if (event.target == instructionsModal) {
+            instructionsModal.style.display = 'none';
+        }
+    }
+
+
 
 
 });
