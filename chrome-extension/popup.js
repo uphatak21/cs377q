@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     var chatInput = document.getElementById('user-input');
+    // var cartButton = document.getElementById('cart-button');
     chatInput.focus();
 
     const chatLog = document.getElementById('chat-log');
@@ -36,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
             When a user tells you what they want, always produce an Amazon url for that item with the following form: "https://www.amazon.com/".
             The query parameters should go after the slash.
             You also know all of the query parameters that correspond to the Amazon filters in the sidebar.
-            You are also able to hear the user via a voice input.`
+            If the user asks, take them to their cart at https://www.amazon.com/gp/cart/view.html?ref_=nav_cart.`
 
             // Send user input to OpenAI API
             const botMessage = document.createElement('div');
@@ -213,6 +214,21 @@ document.addEventListener('DOMContentLoaded', () => {
     closeButton.onclick = function () {
         instructionsModal.style.display = 'none';
     }
+
+    // cartButton.addEventListener('click', function () {
+    //     window.location.href = 
+    // });
+
+    document.getElementById('cart-button').addEventListener('click', function () {
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+            chrome.scripting.executeScript({
+                target: { tabId: tabs[0].id },
+                function: () => {
+                    window.location.href = "https://www.amazon.com/gp/cart/view.html?ref_=nav_cart";
+                }
+            });
+        });
+    });
 
     window.onclick = function (event) {
         if (event.target == instructionsModal) {
