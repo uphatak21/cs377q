@@ -28,9 +28,9 @@
         width: 80%;
     }
     button {
-        /* background-color: #4CAF50; /* Green background */
-        border: none; /* Remove borders */
-        /* color: white; /* White text */
+        background-color: #e2f4f5; /* Green background */
+        border: solid; /* Remove borders */
+        color: white; /* White text */
         padding: 8px 16px; /* Some padding */
         text-align: center; /* Center the text */
         text-decoration: none; /* Remove underline */
@@ -39,6 +39,10 @@
         margin: 4px 2px; /* Add some margin */
         cursor: pointer; /* Add a pointer on hover */
         border-radius: 12px; /* Rounded corners */
+        transition-duration: 0.4s;
+    }
+    button:hover {
+      box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
     }
     .close {
         color: #aaa;
@@ -74,17 +78,22 @@
   <div id="chat-container">
     <div id="chat-log"></div>
     <input type="text" id="user-input" placeholder="Type a message...">
-    <button id="send-btn">Send</button>
-    <button id="voice-btn">Voice Input</button>
-    <button id="clear-btn">Clear Chat</button>
-    <button id="open-welcome">Grant Speech Permissions</button>
+    <button id="send-btn" class="buttons">Send</button>
+    <button id="voice-btn" class="buttons">Voice Input</button>
+    <button id="clear-btn" class="buttons">Clear Chat</button>
+    <button id="open-welcome" class="buttons">Grant Speech Permissions</button>
+    <button id="instructions-button" class="buttons">Instructions</button>
     <div id="message"></div>
   </div>
   <div id="instructions-modal">
     <div id="instructions-content">
         <span class="close">&times;</span>
-        <h2>Instructions</h2>
-        <p id="instructions-text">Welcome to Shopbot! We are here to help you shop. Please tell the chatbot what you want to purchase. You can include information like color, delivery date, price, and anything else you might filter for. The chatbot will redirect you to an Amazon page with relevant search results. Happy shopping!</p>
+        <h2 class="title">Instructions</h2>
+        <p class="instr">Welcome to <b>Shopbot on Amazon</b>! <br><br>
+          Please tell the chatbot <b>what you want to purchase</b>, one item at a time.
+          You can include information like color, delivery date, price, and anything else you might filter for.<br><br>
+          The chatbot will <b>redirect you to an Amazon page</b> with relevant search results. <br><br>
+          Happy shopping!</p>
     </div>
   </div>
   <div id="listening-indicator">Listening...</div>

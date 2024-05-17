@@ -25,8 +25,9 @@
   }
   
   .message.user {
-    background-color: #c4eaec;
+    background-color: #e2f4f5;
     text-align: right;
+    padding: 10px;
   }
   
   /* .message.bot {
@@ -41,4 +42,28 @@
   .bot {
     /* color: #c4eaec; */
     font-family: "Noto Sans", sans-serif;
+  }
+
+  .buttons {
+    color: darkslategray;
+    background-color: #e2f4f5; /* Green background */
+    border: solid; /* Remove borders */
+    padding: 8px 16px; /* Some padding */
+    text-align: center; /* Center the text */
+    text-decoration: none; /* Remove underline */
+    display: inline-block; /* Get the element to align properly */
+    font-size: 16px; /* Increase font size */
+    margin: 4px 2px; /* Add some margin */
+    cursor: pointer; /* Add a pointer on hover */
+    border-radius: 12px; /* Rounded corners */
+  }
+
+  .instr {
+    color: #175e61;
+    font-size: 16px;
+  }
+
+  .title {
+    color: #082d2e;
+    font-size: 20px;
   }
