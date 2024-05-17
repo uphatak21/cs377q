@@ -206,6 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
     var instructionsButton = document.getElementById('instructions-button');
     var instructionsModal = document.getElementById('instructions-modal');
     var closeButton = document.getElementsByClassName('close')[0];
+    var closePopup = document.getElementById('close-popup');
 
     instructionsButton.onclick = function () {
         instructionsModal.style.display = 'block';
@@ -215,9 +216,9 @@ document.addEventListener('DOMContentLoaded', () => {
         instructionsModal.style.display = 'none';
     }
 
-    // cartButton.addEventListener('click', function () {
-    //     window.location.href = 
-    // });
+    closePopup.onclick = function () {
+        window.close();
+    }
 
     document.getElementById('cart-button').addEventListener('click', function () {
         chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {

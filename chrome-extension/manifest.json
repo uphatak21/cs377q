@@ -17,6 +17,7 @@
       "tabs",
       "scripting"
     ],
+    "host_permissions": ["<all_urls>"],
     "background": {
       "service_worker": "background.js"
     },
@@ -28,5 +29,13 @@
             },
             "description": "Open the chat extension"
         }
-    }
+    },
+    "content_scripts": [
+        {
+          "matches": ["*://www.amazon.com/*"],
+          "js": ["content.js"],
+          "css": ["styles.css"],
+          "run_at": "document_start"
+        }
+      ]
 }

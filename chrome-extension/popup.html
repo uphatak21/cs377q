@@ -20,6 +20,10 @@
         background-color: rgb(0,0,0);
         background-color: rgba(0,0,0,0.4);
     }
+    #send-bar {
+        display: flex;
+        flex-direction: row;
+    }
     #instructions-content {
         background-color: #fefefe;
         margin: 15% auto;
@@ -27,10 +31,25 @@
         border: 1px solid #888;
         width: 80%;
     }
+    #close-popup {
+        width: 20px;
+        height: 20px;
+        background-color: transparent;
+        border: none;
+        padding: 2px 4px;
+        font-size: 18px;
+        font-weight: bold;
+        color: #000;
+        align-items: center;
+        justify-content: center;
+    }
+    #close-popup::before {
+        content: 'x'; /* Unicode character for "X" */
+    }
     button {
+        color: #175e61;
         background-color: #e2f4f5; /* Green background */
         border: solid; /* Remove borders */
-        color: white; /* White text */
         padding: 8px 16px; /* Some padding */
         text-align: center; /* Center the text */
         text-decoration: none; /* Remove underline */
@@ -74,15 +93,17 @@
   <div id="top-buttons">
     <button id="instructions-button">i</button>
     <button id="cart-button">Cart</button>
+    <button id="close-popup"></button>
   </div>
   <div id="chat-container">
     <div id="chat-log"></div>
-    <input type="text" id="user-input" placeholder="Type a message...">
-    <button id="send-btn" class="buttons">Send</button>
-    <button id="voice-btn" class="buttons">Voice Input</button>
+    <div id="send-bar">
+        <input type="text" id="user-input" placeholder="Type a message...">
+        <button id="send-btn" class="buttons">Send</button>
+        <button id="voice-btn" class="buttons">Voice Input</button>
+    </div>
     <button id="clear-btn" class="buttons">Clear Chat</button>
     <button id="open-welcome" class="buttons">Grant Speech Permissions</button>
-    <button id="instructions-button" class="buttons">Instructions</button>
     <div id="message"></div>
   </div>
   <div id="instructions-modal">
