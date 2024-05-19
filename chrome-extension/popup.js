@@ -1,3 +1,6 @@
+var messageBody = document.querySelector('#instructions-modal');
+messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
+
 document.addEventListener('DOMContentLoaded', () => {
     var chatInput = document.getElementById('user-input');
     // var cartButton = document.getElementById('cart-button');
@@ -12,12 +15,20 @@ document.addEventListener('DOMContentLoaded', () => {
         conversationHistory.forEach(message => {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${message.role}`;
-            if (message.role === 'assistant' && message.content.includes('<a href="')) {
+            if (message.role === 'assistant' && message.content.includes('<button class="')) {
                 messageDiv.innerHTML = message.content; // Set innerHTML to preserve the HTML when reopening the chat
             } else {
                 messageDiv.textContent = message.content; // Set textContent for other messages
             }
             chatLog.appendChild(messageDiv);
+        });
+
+        // if there is a link in the chatbot response, turn it into a button for easier clicking
+        chatLog.addEventListener('click', (event) => {
+            if (event.target.classList.contains('link-button')) {
+                const url = event.target.getAttribute('data-url');
+                window.open(url, '_blank');
+            }
         });
     }
 
@@ -66,7 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     },
                     body: JSON.stringify({
                         model: 'gpt-4o',
-                        // messages: conversationHistory.concat({ role: 'user', content: userInput })
                         messages: conversationHistory.concat([
                             { role: 'system', content: SYSTEM_PROMPT },
                             { role: 'user', content: userInput }
@@ -74,34 +84,49 @@ document.addEventListener('DOMContentLoaded', () => {
                     })
                 });
 
+
+                // IN CASE AUTOMATIC REDIRECTION IS NOT POSSIBLE
                 const data = await response.json();
                 let reply = data.choices[0].message.content.trim();
-
+                const productPattern = /\[([^[\]]+)\]/; // extract product from user message
+            
+                // Match the product term in the text using the pattern
+                const match = reply.match(productPattern);
+            
+                // Extract the product term from the match
+                const product = match ? match[1] : null;
+            
+                reply = reply.replace(productPattern, ' '); // removing the product from the ChatGPT prompt
+            
                 // Regular expression to match URLs
                 const urlPattern = /https?:\/\/[^\s]+/g;
-                reply = reply.replace(urlPattern, url => `<a href="${url}" target="_blank">${url}</a>`);
-
-                // Set the reply as innerHTML to render the links
-                botMessage.innerHTML = reply;
-                conversationHistory.push({role: 'assistant', content: reply});
-                localStorage.setItem('conversationHistory', JSON.stringify(conversationHistory));
-
-
-                // const urlPattern = /https?:\/\/www\.amazon\.com\/[^\s]*/g;
-                // const urls = reply.match(urlPattern);
-                // if (urls && urls.length > 0) {
-                //     const firstUrl = urls[0];
-                //     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-                //         chrome.scripting.executeScript({
-                //             target: { tabId: tabs[0].id },
-                //             function: (url) => {
-                //                 window.location.href = url;
-                //             },
-                //             args: [firstUrl]
-                //         });
-                //     });
-                // }
-
+                const urlMatch = reply.match(urlPattern);
+                const url = urlMatch ? urlMatch[0] : null;
+            
+                // Replace URLs with buttons
+                reply = reply.replace(urlPattern, url => `<div class="button-container"><button class="link-button" id="link-btn" data-url="${url}">${product}</button></div>`);
+            
+                // Set the modified reply as innerHTML to render the links
+                const newBotReply = reply.replace(/: \[([^[\]]+)\]\(/, '');
+                botMessage.innerHTML = newBotReply;
+            
+                // If URL is available, redirect; otherwise, continue with conversation
+                if (url) {
+                    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+                        const firstUrl = url; // Assuming `url` contains the extracted URL
+                        chrome.scripting.executeScript({
+                            target: { tabId: tabs[0].id },
+                            function: (url) => {
+                                window.location.href = url;
+                            },
+                            args: [firstUrl]
+                        });
+                    });
+                } else {
+                    conversationHistory.push({ role: 'assistant', content: newBotReply });
+                    localStorage.setItem('conversationHistory', JSON.stringify(conversationHistory));
+                }
+            
                 document.getElementById('user-input').value = '';
             } catch (error) {
                 botMessage.textContent = 'Error: ' + error.message;
