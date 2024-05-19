@@ -1,0 +1,12 @@
+{
+    "buttons": [
+      {
+        "id": "send-btn",
+        "text": "Send",
+        "shortcut": {
+            "default": "Control+Alt+S",
+            "mac": "Meta+Alt+S"
+        }
+      }
+    ]
+}  
