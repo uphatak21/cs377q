@@ -1,3 +1,6 @@
+var messageBody = document.querySelector('#instructions-modal');
+messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
+
 document.addEventListener('DOMContentLoaded', () => {
     var chatInput = document.getElementById('user-input');
     // var cartButton = document.getElementById('cart-button');
@@ -74,39 +77,54 @@ document.addEventListener('DOMContentLoaded', () => {
                     },
                     body: JSON.stringify({
                         model: 'gpt-4o',
-                        // messages: conversationHistory.concat({ role: 'user', content: userInput })
                         messages: conversationHistory.concat([
                             { role: 'system', content: SYSTEM_PROMPT },
                             { role: 'user', content: userInput }
                         ])
                     })
                 });
-
+            
                 const data = await response.json();
                 let reply = data.choices[0].message.content.trim();
-                const productPattern = /\[([^[\]]+)\]/;         // extract product from user message
-
+                const productPattern = /\[([^[\]]+)\]/; // extract product from user message
+            
                 // Match the product term in the text using the pattern
                 const match = reply.match(productPattern);
-
+            
                 // Extract the product term from the match
                 const product = match ? match[1] : null;
-
-                reply = reply.replace(match, ' ');              // removing the product from the ChatGPT prompt
-
+            
+                reply = reply.replace(productPattern, ' '); // removing the product from the ChatGPT prompt
+            
                 // Regular expression to match URLs
                 const urlPattern = /https?:\/\/[^\s]+/g;
-
+                const urlMatch = reply.match(urlPattern);
+                const url = urlMatch ? urlMatch[0] : null;
+            
                 // Replace URLs with buttons
                 reply = reply.replace(urlPattern, url => `<div class="button-container"><button class="link-button" id="link-btn" data-url="${url}">${product}</button></div>`);
-
+            
                 // Set the modified reply as innerHTML to render the links
-                const newBotReply = reply.replace(/: \[([^[\]]+)\]/, '');
+                const newBotReply = reply.replace(/: \[([^[\]]+)\]\(/, '');
                 botMessage.innerHTML = newBotReply;
-                conversationHistory.push({role: 'assistant', content: newBotReply});
-                localStorage.setItem('conversationHistory', JSON.stringify(conversationHistory));
-
-
+            
+                // If URL is available, redirect; otherwise, continue with conversation
+                if (url) {
+                    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+                        const firstUrl = url; // Assuming `url` contains the extracted URL
+                        chrome.scripting.executeScript({
+                            target: { tabId: tabs[0].id },
+                            function: (url) => {
+                                window.location.href = url;
+                            },
+                            args: [firstUrl]
+                        });
+                    });
+                } else {
+                    conversationHistory.push({ role: 'assistant', content: newBotReply });
+                    localStorage.setItem('conversationHistory', JSON.stringify(conversationHistory));
+                }
+            
                 document.getElementById('user-input').value = '';
             } catch (error) {
                 botMessage.textContent = 'Error: ' + error.message;
