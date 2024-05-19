@@ -83,7 +83,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         ])
                     })
                 });
-            
+
+
+                // IN CASE AUTOMATIC REDIRECTION IS NOT POSSIBLE
                 const data = await response.json();
                 let reply = data.choices[0].message.content.trim();
                 const productPattern = /\[([^[\]]+)\]/; // extract product from user message
