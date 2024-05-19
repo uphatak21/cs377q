@@ -12,7 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
         conversationHistory.forEach(message => {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${message.role}`;
-            messageDiv.textContent = message.content;
+            if (message.role === 'assistant' && message.content.includes('<a href="')) {
+                messageDiv.innerHTML = message.content; // Set innerHTML to preserve the HTML when reopening the chat
+            } else {
+                messageDiv.textContent = message.content; // Set textContent for other messages
+            }
             chatLog.appendChild(messageDiv);
         });
     }
@@ -37,7 +41,15 @@ document.addEventListener('DOMContentLoaded', () => {
             When a user tells you what they want, always produce an Amazon url for that item with the following form: "https://www.amazon.com/".
             The query parameters should go after the slash.
             You also know all of the query parameters that correspond to the Amazon filters in the sidebar.
-            If the user asks, take them to their cart at https://www.amazon.com/gp/cart/view.html?ref_=nav_cart.`
+            If the user asks, take them to their cart at https://www.amazon.com/gp/cart/view.html?ref_=nav_cart.
+            
+            
+            Edge cases:
+1. **No Automatic Redirection**: If you notice that the user is not being redirected automatically to Amazon, provide them with a clickable link instead,
+   and tell them to go to the Amazon homepage first and ask again.
+2. **Ambiguous Input**: If the user's input is ambiguous or incomplete, ask them clarifying questions to ensure you generate the correct Amazon link.
+3. **Unavailable Product**: If the specified product is unavailable or cannot be found, suggest similar alternatives available on Amazon.
+4. **General Error Handling**: If an error occurs or you cannot fulfill the request, apologize and ask the user to rephrase or provide more details.`
 
             // Send user input to OpenAI API
             const botMessage = document.createElement('div');
@@ -63,26 +75,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 const data = await response.json();
-                const reply = data.choices[0].message.content.trim();
-                botMessage.textContent = reply;
+                let reply = data.choices[0].message.content.trim();
 
-                conversationHistory.push({ role: 'assistant', content: reply });
+                // Regular expression to match URLs
+                const urlPattern = /https?:\/\/[^\s]+/g;
+                reply = reply.replace(urlPattern, url => `<a href="${url}" target="_blank">${url}</a>`);
+
+                // Set the reply as innerHTML to render the links
+                botMessage.innerHTML = reply;
+                conversationHistory.push({role: 'assistant', content: reply});
                 localStorage.setItem('conversationHistory', JSON.stringify(conversationHistory));
 
-                const urlPattern = /https?:\/\/www\.amazon\.com\/[^\s]*/g;
-                const urls = reply.match(urlPattern);
-                if (urls && urls.length > 0) {
-                    const firstUrl = urls[0];
-                    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-                        chrome.scripting.executeScript({
-                            target: { tabId: tabs[0].id },
-                            function: (url) => {
-                                window.location.href = url;
-                            },
-                            args: [firstUrl]
-                        });
-                    });
-                }
+
+                // const urlPattern = /https?:\/\/www\.amazon\.com\/[^\s]*/g;
+                // const urls = reply.match(urlPattern);
+                // if (urls && urls.length > 0) {
+                //     const firstUrl = urls[0];
+                //     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+                //         chrome.scripting.executeScript({
+                //             target: { tabId: tabs[0].id },
+                //             function: (url) => {
+                //                 window.location.href = url;
+                //             },
+                //             args: [firstUrl]
+                //         });
+                //     });
+                // }
 
                 document.getElementById('user-input').value = '';
             } catch (error) {
@@ -105,42 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
         conversationHistory.length = 0; // Clear the array
         updateChatLog(); // Update the chat log to reflect the cleared history
     });
-
-    // Voice input functionality
-    // if (!('SpeechRecognition' in window) && !('webkitSpeechRecognition' in window)) {
-    //     console.error('Speech recognition not supported in this browser.');
-    //     return;
-    // }
-
-    // const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    // const recognition = new SpeechRecognition();
-    // recognition.continuous = false;
-    // recognition.interimResults = false;
-    // recognition.lang = 'en-US';
-
-    // recognition.onresult = (event) => {
-    //     const transcript = event.results[0][0].transcript;
-    //     console.log('Voice input recognized:', transcript);
-    //     document.getElementById('user-input').value = transcript;
-    //     sendMessage();
-    // };
-
-    // recognition.onerror = (event) => {
-    //     console.error('Speech recognition error', event);
-    // };
-
-    // recognition.onstart = () => {
-    //     console.log('Speech recognition started');
-    // };
-
-    // recognition.onend = () => {
-    //     console.log('Speech recognition ended');
-    // };
-
-    // document.getElementById('voice-btn').addEventListener('click', () => {
-    //     console.log('Starting speech recognition');
-    //     recognition.start();
-    // });
 
     function startListening() {
         document.getElementById('listening-indicator').style.display = 'block';
