@@ -67,3 +67,22 @@
     color: #082d2e;
     font-size: 20px;
   }
+
+  .link-button {
+    background-color: darkslategray;
+    color: #e2f4f5;
+    border: 1 solid #e2f4f5;
+    padding: 16px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.link-button:hover{
+  box-shadow: 0 5px 5px 0 rgba(0,0,0,0.14), 0 5px 5px 0 rgba(0,0,0,0.09);
+}
+
+.button-container {
+  text-align: center;
+  margin: 10px 0;
+}
