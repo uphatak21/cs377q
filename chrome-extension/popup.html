@@ -1,40 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shopbot</title>
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://kit.fontawesome.com/7c6da906bd.js" crossorigin="anonymous"></script>
-  <style>
-    body { font-family: Arial, sans-serif; }
-    #chat-container { width: 300px; height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; }
-    #user-input { width: calc(100% - 22px); padding: 10px; }
-    .message { margin-bottom: 10px; font-size: 16px;}
-    #instructions-modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
+<link rel="stylesheet" href="styles.css" />
+<html>
+  <head>
+    <title>Shopbot</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      #chat-container {
+        width: 300px;
+        height: 550px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        padding: 20px;
+        text-align: center;
+      }
+      #user-input {
+        width: calc(100% - 22px);
+        padding: 10px;
+      }
+      .message {
+        margin-bottom: 10px;
+        font-size: 16px;
+      }
+      #pill {
+        width: 99%;
+        min-height: 30%;
+        padding: 10px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+        border-radius: 5px;
+        text-align: center;
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #pill-container {
         width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgb(0,0,0);
-        background-color: rgba(0,0,0,0.4);
-    }
-    #send-bar {
+        height: 200px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-y: auto;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+      #send-bar {
         display: flex;
         flex-direction: row;
-    }
-    #instructions-content {
-        background-color: #fefefe;
-        margin: 15% auto;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%;
-    }
-    #close-popup {
+      }
+      #close-popup {
         width: 20px;
         height: 20px;
         background-color: transparent;
@@ -45,11 +67,11 @@
         color: #000;
         align-items: center;
         justify-content: center;
-    }
-    #close-popup::before {
-        content: 'x'; /* Unicode character for "X" */
-    }
-    button {
+      }
+      #close-popup::before {
+        content: "x"; /* Unicode character for "X" */
+      }
+      button {
         color: #175e61;
         background-color: #e2f4f5; /* Green background */
         border: solid; /* Remove borders */
@@ -62,24 +84,25 @@
         cursor: pointer; /* Add a pointer on hover */
         border-radius: 12px; /* Rounded corners */
         transition-duration: 0.4s;
-    }
-    button:hover {
-      box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
-    }
-    .close {
+      }
+      button:hover {
+        box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24),
+          0 17px 50px 0 rgba(0, 0, 0, 0.19);
+      }
+      .close {
         color: #aaa;
         float: right;
         font-size: 28px;
         font-weight: bold;
-    }
+      }
 
-    .close:hover,
-    .close:focus {
+      .close:hover,
+      .close:focus {
         color: black;
         text-decoration: none;
         cursor: pointer;
-    }
-    #listening-indicator {
+      }
+      #listening-indicator {
         display: none;
         position: fixed;
         bottom: 10px;
@@ -89,39 +112,73 @@
         padding: 10px 20px;
         border-radius: 5px;
         z-index: 1000;
-    }
-  </style>
-</head>
-<body>
-  <div id="top-buttons">
-    <button id="instructions-button">i</button>
-    <button id="close-popup"></button>
-  </div>
-  <div id="chat-container">
-    <div id="chat-log"></div>
-    <div id="send-bar">
-        <input type="text" id="user-input" placeholder="Type a message...">
-        <button id="send-btn" class="buttons"><i class="fas fa-paper-plane"></i> Send</button>
+      }
+      #chat-box {
+        display: none;
+      }
+      #filter-side {
+        height: fit-content;
+        width: fit-content;
+        box-shadow: 0px 0px 5px 3px rgba(52,194,199,1);
+        box-sizing: border-box;
+        padding: 10px;
+        margin-top: 30px;
+      }
+      #navigate-button {
+        padding: 20px 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="chat-container">
+      <p class="instr title">
+        Welcome to <br /> <b>Shopbot on Amazon</b>! <br />
+      </p>
+      <p class="instr">
+        <i>Say goodbye to small click targets!</i> <br />Ask the chatbot <b>what item you want to purchase</b> and <b>narrow your
+          search</b> by telling your bot more details.<br />
+      </p>
+        
+      <div id="chat-box">
+        <div id="chat-log"></div>
+        <div id="send-bar">
+          <input type="text" id="user-input" placeholder="Type a message..." />
+          <button id="send-btn" class="buttons">Send</button>
+          <button id="voice-btn" class="buttons">Voice Input</button>
+        </div>
+        <button id="clear-btn" class="buttons">Clear Chat</button>
+        <button id="open-welcome" class="buttons">
+          Grant Speech Permissions
+        </button>
+        <div id="message"></div>
+      </div>
+      <button id="navigate-button">Let's Chat!</button>
+      <p class="instr" id="filter-side"> Look at the filter side bar highlighted in blue on the left side
+        of your screen! This bar shows options for how you can narrow your search.
+      </p>
+      <div id="pill-container">
+        <div id="pill" class="instr">
+          "I want headphones that are noise cancelling"
+        </div>
+        <div id="pill" class="instr">"I want blue headphones"</div>
+        <div id="pill" class="instr">
+          "I want headphones that can be delivered tomorrow"
+        </div>
+        <div id="pill" class="instr">"I want headphones under $20"</div>
+        <div id="pill" class="instr">
+          "I want headphones that are only 5 stars"
+        </div>
+        <div id="pill" class="instr">
+          "I want headphones that do Prime delivery"
+        </div>
+      </div>
+    
+      <p class="instr" > Try this keyboard shortcut to open the bot without clicking: <br /><br />
+        <b> Command/Control + Shift + 'Y'</b>
+      </p>
     </div>
-    <div id="action-bar">
-      <button id="voice-btn" class="buttons">Voice Input</button>
-      <button id="clear-btn" class="buttons">Clear Chat</button>
-    </div>
-    <button id="open-welcome" class="buttons">Grant Speech Permissions</button>
-    <div id="message"></div>
-  </div>
-  <div id="instructions-modal">
-    <div id="instructions-content">
-        <span class="close">&times;</span>
-        <h2 class="title">Instructions</h2>
-        <p class="instr">Welcome to <b>Shopbot on Amazon</b>! <br><br>
-          Please tell the chatbot <b>what you want to purchase</b>, one item at a time.
-          You can include information like color, delivery date, price, and anything else you might filter for.<br><br>
-          The chatbot will <b>redirect you to an Amazon page</b> with relevant search results. <br><br>
-          Happy shopping!</p>
-    </div>
-  </div>
-  <div id="listening-indicator">Listening...</div>
-  <script src="popup.js"></script>
-</body>
+
+    <div id="listening-indicator">Listening...</div>
+    <script src="popup.js"></script>
+  </body>
 </html>
