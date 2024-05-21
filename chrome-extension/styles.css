@@ -85,3 +85,8 @@
   text-align: center;
   margin: 10px 0;
 }
+
+#action-bar {
+  margin: 10px 10px;
+  text-align: center;
+}

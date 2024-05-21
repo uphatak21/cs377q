@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<link rel="stylesheet" href="styles.css">
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shopbot</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://kit.fontawesome.com/7c6da906bd.js" crossorigin="anonymous"></script>
   <style>
     body { font-family: Arial, sans-serif; }
     #chat-container { width: 300px; height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; }
@@ -98,10 +101,12 @@
     <div id="chat-log"></div>
     <div id="send-bar">
         <input type="text" id="user-input" placeholder="Type a message...">
-        <button id="send-btn" class="buttons">Send</button>
-        <button id="voice-btn" class="buttons">Voice Input</button>
+        <button id="send-btn" class="buttons"><i class="fas fa-paper-plane"></i> Send</button>
     </div>
-    <button id="clear-btn" class="buttons">Clear Chat</button>
+    <div id="action-bar">
+      <button id="voice-btn" class="buttons">Voice Input</button>
+      <button id="clear-btn" class="buttons">Clear Chat</button>
+    </div>
     <button id="open-welcome" class="buttons">Grant Speech Permissions</button>
     <div id="message"></div>
   </div>
