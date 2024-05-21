@@ -7,6 +7,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const conversationHistory =
         JSON.parse(localStorage.getItem("conversationHistory")) || [];
 
+    const chatContainer = document.getElementById('chat-log');
+    const scrollToBottom = () => {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    };
+
     // Function to update the chat log
     function updateChatLog() {
         chatLog.innerHTML = ""; // Clear the existing chat log
@@ -136,8 +141,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
                     );
                 }
-
                 document.getElementById("user-input").value = "";
+                scrollToBottom();
             } catch (error) {
                 botMessage.textContent = "Error: " + error.message;
             }
@@ -230,6 +235,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 pillContain.style.display = "none";
                 navigateButton.innerText = "View Instructions";
                 chatInput.focus();
+                scrollToBottom();
             }
             if (value == "View Instructions") {
                 chatBox.style.display = "none";
@@ -239,22 +245,22 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-    document
-        .getElementById("navigate-button")
-        .addEventListener("keydown", (event) => {
-            if (event.key === "Enter") {
-                let value = navigateButton.innerText;
-                var chatBox = document.getElementById("chat-box");
-                console.log(value);
-                if (value == "Let's Chat!") {
-                    chatBox.style.display = "block";
-                    filterSide.style.display = "none";
-                    pillContain.style.display = "none";
-                    navigateButton.innerText = "View Instructions";
-                    chatInput.focus();
-                }
-            }
-        });
+    // document
+    //     .getElementById("navigate-button")
+    //     .addEventListener("keydown", (event) => {
+    //         if (event.key === "Enter") {
+    //             let value = navigateButton.innerText;
+    //             var chatBox = document.getElementById("chat-box");
+    //             console.log(value);
+    //             if (value == "Let's Chat!") {
+    //                 chatBox.style.display = "block";
+    //                 filterSide.style.display = "none";
+    //                 pillContain.style.display = "none";
+    //                 navigateButton.innerText = "View Instructions";
+    //                 chatInput.focus();
+    //             }
+    //         }
+    //     });
 
     closePopup.onclick = function () {
         window.close();
