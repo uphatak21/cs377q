@@ -37,4 +37,9 @@ document.addEventListener("DOMContentLoaded", styleButtons);
 
 // Use MutationObserver to detect changes in the DOM and apply styles dynamically
 const observer = new MutationObserver(styleButtons);
-observer.observe(document.body, { childList: true, subtree: true });
+if (document.body == null) {
+  console.log("body is null");
+} else {
+  observer.observe(document.body, { childList: true, subtree: true });
+}
+
