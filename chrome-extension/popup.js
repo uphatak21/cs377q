@@ -7,24 +7,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const conversationHistory =
         JSON.parse(localStorage.getItem("conversationHistory")) || [];
 
-  // initial elements on onboarding
-  var navigateButton = document.getElementById("navigate-button");
-  var chatBox = document.getElementById("chat-box");
-  var filterSide = document.getElementById("filter-side");
-  var pillContain = document.getElementById("pill-container");
+    const chatContainer = document.getElementById('chat-log');
+    const scrollToBottom = () => {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    };
 
-  // Function to update the chat log
-  function updateChatLog() {
-    chatLog.innerHTML = ""; // Clear the existing chat log
-    const addedMessages = new Set(); // Set to track added messages
+    // initial elements on onboarding
+    var navigateButton = document.getElementById("navigate-button");
+    var chatBox = document.getElementById("chat-box");
+    var filterSide = document.getElementById("filter-side");
+    var pillContain = document.getElementById("pill-container");
 
-    // adding something so that chat is still open when there are conversations
-    if (conversationHistory.length > 0) {
-      chatBox.style.display = "block";
-      filterSide.style.display = "none";
-      pillContain.style.display = "none";
-      navigateButton.innerText = "View Instructions";
-    }
+    // Function to update the chat log
+    function updateChatLog() {
+        chatLog.innerHTML = ""; // Clear the existing chat log
+        const addedMessages = new Set(); // Set to track added messages
 
         conversationHistory.forEach((message) => {
             if (!addedMessages.has(message.content)) {
@@ -42,6 +39,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 window.open(url, "_blank");
             }
         });
+
+        // adding something so that chat is still open when there are conversations
+        if (conversationHistory.length > 0) {
+            chatBox.style.display = "block";
+            filterSide.style.display = "none";
+            pillContain.style.display = "none";
+            navigateButton.innerText = "View Instructions";
+            scrollToBottom();
+        }
     }
 
     // Initial update of the chat log on page load
@@ -226,8 +232,8 @@ document.addEventListener("DOMContentLoaded", () => {
         chrome.tabs.create({ url: chrome.runtime.getURL("welcome.html") });
     });
 
-  
-  //var closePopup = document.getElementById("close-popup");
+
+    var closePopup = document.getElementById("close-popup");
 
     document
         .getElementById("navigate-button")
