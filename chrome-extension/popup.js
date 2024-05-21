@@ -1,6 +1,3 @@
-//var messageBody = document.querySelector("#instructions-modal");
-//messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
-
 document.addEventListener("DOMContentLoaded", () => {
   var chatInput = document.getElementById("user-input");
   // var cartButton = document.getElementById('cart-button');
@@ -13,21 +10,18 @@ document.addEventListener("DOMContentLoaded", () => {
   // Function to update the chat log
   function updateChatLog() {
     chatLog.innerHTML = ""; // Clear the existing chat log
+    const addedMessages = new Set(); // Set to track added messages
+
     conversationHistory.forEach((message) => {
-      const messageDiv = document.createElement("div");
-      messageDiv.className = `message ${message.role}`;
-      if (
-        message.role === "assistant" &&
-        message.content.includes('<button class="')
-      ) {
-        messageDiv.innerHTML = message.content; // Set innerHTML to preserve the HTML when reopening the chat
-      } else {
-        messageDiv.textContent = message.content; // Set textContent for other messages
+      if (!addedMessages.has(message.content)) {
+        const messageDiv = document.createElement("div");
+        messageDiv.className = `message ${message.role}`;
+        messageDiv.innerHTML = message.content; // Set innerHTML to preserve the HTML structure
+        chatLog.appendChild(messageDiv);
+        addedMessages.add(message.content); // Add to set to prevent duplication
       }
-      chatLog.appendChild(messageDiv);
     });
 
-    // if there is a link in the chatbot response, turn it into a button for easier clicking
     chatLog.addEventListener("click", (event) => {
       if (event.target.classList.contains("link-button")) {
         const url = event.target.getAttribute("data-url");
@@ -123,6 +117,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const newBotReply = reply.replace(/: \[([^[\]]+)\]\(/, "");
         botMessage.innerHTML = newBotReply;
 
+        conversationHistory.push({ role: "assistant", content: botMessage.outerHTML });
+        localStorage.setItem(
+          "conversationHistory",
+          JSON.stringify(conversationHistory)
+        );
+
         // If URL is available, redirect; otherwise, continue with conversation
         if (url) {
           chrome.tabs.query(
@@ -137,12 +137,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 args: [firstUrl],
               });
             }
-          );
-        } else {
-          conversationHistory.push({ role: "assistant", content: newBotReply });
-          localStorage.setItem(
-            "conversationHistory",
-            JSON.stringify(conversationHistory)
           );
         }
 
