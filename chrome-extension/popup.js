@@ -1,276 +1,292 @@
-//var messageBody = document.querySelector("#instructions-modal");
-//messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
-
 document.addEventListener("DOMContentLoaded", () => {
-  var chatInput = document.getElementById("user-input");
-  // var cartButton = document.getElementById('cart-button');
-  chatInput.focus();
+    var chatInput = document.getElementById("user-input");
+    // var cartButton = document.getElementById('cart-button');
+    chatInput.focus();
 
-  const chatLog = document.getElementById("chat-log");
-  const conversationHistory =
-    JSON.parse(localStorage.getItem("conversationHistory")) || [];
+    const chatLog = document.getElementById("chat-log");
+    const conversationHistory =
+        JSON.parse(localStorage.getItem("conversationHistory")) || [];
 
-  // Function to update the chat log
-  function updateChatLog() {
-    chatLog.innerHTML = ""; // Clear the existing chat log
-    conversationHistory.forEach((message) => {
-      const messageDiv = document.createElement("div");
-      messageDiv.className = `message ${message.role}`;
-      if (
-        message.role === "assistant" &&
-        message.content.includes('<button class="')
-      ) {
-        messageDiv.innerHTML = message.content; // Set innerHTML to preserve the HTML when reopening the chat
-      } else {
-        messageDiv.textContent = message.content; // Set textContent for other messages
-      }
-      chatLog.appendChild(messageDiv);
-    });
+    const chatContainer = document.getElementById('chat-log');
+    const scrollToBottom = () => {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    };
 
-    // if there is a link in the chatbot response, turn it into a button for easier clicking
-    chatLog.addEventListener("click", (event) => {
-      if (event.target.classList.contains("link-button")) {
-        const url = event.target.getAttribute("data-url");
-        window.open(url, "_blank");
-      }
-    });
-  }
+    // initial elements on onboarding
+    var navigateButton = document.getElementById("navigate-button");
+    var chatBox = document.getElementById("chat-box");
+    var filterSide = document.getElementById("filter-side");
+    var pillContain = document.getElementById("pill-container");
 
-  // Initial update of the chat log on page load
-  updateChatLog();
+    // Function to update the chat log
+    function updateChatLog() {
+        chatLog.innerHTML = ""; // Clear the existing chat log
+        const addedMessages = new Set(); // Set to track added messages
 
-  async function sendMessage() {
-    const userInput = document.getElementById("user-input").value;
+        conversationHistory.forEach((message) => {
+            if (!addedMessages.has(message.content)) {
+                const messageDiv = document.createElement("div");
+                messageDiv.className = `message ${message.role}`;
+                messageDiv.innerHTML = message.content; // Set innerHTML to preserve the HTML structure
+                chatLog.appendChild(messageDiv);
+                addedMessages.add(message.content); // Add to set to prevent duplication
+            }
+        });
 
-    if (userInput) {
-      const userMessage = document.createElement("div");
-      userMessage.className = "message user";
-      userMessage.textContent = userInput;
-      chatLog.appendChild(userMessage);
+        chatLog.addEventListener("click", (event) => {
+            if (event.target.classList.contains("link-button")) {
+                const url = event.target.getAttribute("data-url");
+                window.open(url, "_blank");
+            }
+        });
 
-      conversationHistory.push({ role: "user", content: userInput });
-      localStorage.setItem(
-        "conversationHistory",
-        JSON.stringify(conversationHistory)
-      );
+        // adding something so that chat is still open when there are conversations
+        if (conversationHistory.length > 0) {
+            chatBox.style.display = "block";
+            filterSide.style.display = "none";
+            pillContain.style.display = "none";
+            navigateButton.innerText = "View Instructions";
+            scrollToBottom();
+        }
+    }
 
-      SYSTEM_PROMPT = `"You are ChatGPT, a large language model
+    // Initial update of the chat log on page load
+    updateChatLog();
+
+    async function sendMessage() {
+        const userInput = document.getElementById("user-input").value;
+
+        if (userInput) {
+            const userMessage = document.createElement("div");
+            userMessage.className = "message user";
+            userMessage.textContent = userInput;
+            chatLog.appendChild(userMessage);
+
+            conversationHistory.push({ role: "user", content: userInput });
+            localStorage.setItem(
+                "conversationHistory",
+                JSON.stringify(conversationHistory)
+            );
+
+            SYSTEM_PROMPT = `"You are ChatGPT, a large language model
             trained by OpenAI, based on the GPT-4o architecture.
             When a user tells you what they want, always produce an Amazon url for that item with the following form: "https://www.amazon.com/".
             The query parameters should go after the slash.
-            You also know all of the query parameters that correspond to the Amazon filters in the sidebar.
+            Queries that ask for attributes that correspond to the Amazon filters in the sidebar should incorporate the attributes into filters, rather than search terms.
+            For example, the query "chocolate under $130" should return the url "https://www.amazon.com/s?k=chocolate&qid=1716315294&rnid=386454011&ref=sr_nr_p_36_0_0&low-price=&high-price=130", rather than "https://www.amazon.com/s?k=chocolate+under+130+dollars".
             If the user asks, take them to their cart at https://www.amazon.com/gp/cart/view.html?ref_=nav_cart.
-            
-            
-            Edge cases:
-1. **No Automatic Redirection**: If you notice that the user is not being redirected automatically to Amazon, provide them with a clickable link instead,
-   and tell them to go to the Amazon homepage first and ask again.
-2. **Ambiguous Input**: If the user's input is ambiguous or incomplete, ask them clarifying questions to ensure you generate the correct Amazon link.
-3. **Unavailable Product**: If the specified product is unavailable or cannot be found, suggest similar alternatives available on Amazon.
-4. **General Error Handling**: If an error occurs or you cannot fulfill the request, apologize and ask the user to rephrase or provide more details.`;
+            Handle the following edge cases as follows:
+            1. **Ambiguous Input**: If the user's input is ambiguous or incomplete, ask them clarifying questions to ensure you generate the correct Amazon link.
+            2. **Unavailable Product**: If the specified product is unavailable or cannot be found, suggest similar alternatives available on Amazon.
+            3. **General Error Handling**: If an error occurs or you cannot fulfill the request, apologize and ask the user to rephrase or provide more details.`;
 
-      // Send user input to OpenAI API
-      const botMessage = document.createElement("div");
-      botMessage.className = "message bot";
-      botMessage.textContent = "Thinking...";
-      chatLog.appendChild(botMessage);
+            // Send user input to OpenAI API
+            const botMessage = document.createElement("div");
+            botMessage.className = "message bot";
+            botMessage.textContent = "Thinking...";
+            chatLog.appendChild(botMessage);
 
-      try {
-        const response = await fetch(
-          "https://api.openai.com/v1/chat/completions",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer sk-proj-jpXBQaHemVKLxypx1WQGT3BlbkFJDrLI6jFQk2xnaHmF1OOy`,
-            },
-            body: JSON.stringify({
-              model: "gpt-4o",
-              messages: conversationHistory.concat([
-                { role: "system", content: SYSTEM_PROMPT },
-                { role: "user", content: userInput },
-              ]),
-            }),
-          }
-        );
+            try {
+                const response = await fetch(
+                    "https://api.openai.com/v1/chat/completions",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer sk-proj-jpXBQaHemVKLxypx1WQGT3BlbkFJDrLI6jFQk2xnaHmF1OOy`,
+                        },
+                        body: JSON.stringify({
+                            model: "gpt-4o",
+                            messages: conversationHistory.concat([
+                                { role: "system", content: SYSTEM_PROMPT },
+                                { role: "user", content: userInput },
+                            ]),
+                        }),
+                    }
+                );
 
-        // IN CASE AUTOMATIC REDIRECTION IS NOT POSSIBLE
-        const data = await response.json();
-        let reply = data.choices[0].message.content.trim();
-        const productPattern = /\[([^[\]]+)\]/; // extract product from user message
+                // IN CASE AUTOMATIC REDIRECTION IS NOT POSSIBLE
+                const data = await response.json();
+                let reply = data.choices[0].message.content.trim();
+                const productPattern = /\[([^[\]]+)\]/; // extract product from user message
 
-        // Match the product term in the text using the pattern
-        const match = reply.match(productPattern);
+                // Match the product term in the text using the pattern
+                const match = reply.match(productPattern);
 
-        // Extract the product term from the match
-        const product = match ? match[1] : null;
+                // Extract the product term from the match
+                const product = match ? match[1] : null;
 
-        reply = reply.replace(productPattern, " "); // removing the product from the ChatGPT prompt
+                reply = reply.replace(productPattern, " "); // removing the product from the ChatGPT prompt
 
-        // Regular expression to match URLs
-        const urlPattern = /https?:\/\/[^\s]+/g;
-        const urlMatch = reply.match(urlPattern);
-        const url = urlMatch ? urlMatch[0] : null;
+                // Regular expression to match URLs
+                const urlPattern = /https?:\/\/[^\s]+/g;
+                const urlMatch = reply.match(urlPattern);
+                const url = urlMatch ? urlMatch[0] : null;
 
-        // Replace URLs with buttons
-        reply = reply.replace(
-          urlPattern,
-          (url) =>
-            `<div class="button-container"><button class="link-button" id="link-btn" data-url="${url}">${product}</button></div>`
-        );
+                // Replace URLs with buttons
+                reply = reply.replace(
+                    urlPattern,
+                    (url) =>
+                        `<div class="button-container"><button class="link-button" id="link-btn" data-url="${url}">${product}</button></div>`
+                );
 
-        // Set the modified reply as innerHTML to render the links
-        const newBotReply = reply.replace(/: \[([^[\]]+)\]\(/, "");
-        botMessage.innerHTML = newBotReply;
+                // Set the modified reply as innerHTML to render the links
+                const newBotReply = reply.replace(/: \[([^[\]]+)\]\(/, "");
+                botMessage.innerHTML = newBotReply;
 
-        // If URL is available, redirect; otherwise, continue with conversation
-        if (url) {
-          chrome.tabs.query(
-            { active: true, currentWindow: true },
-            function (tabs) {
-              const firstUrl = url; // Assuming `url` contains the extracted URL
-              chrome.scripting.executeScript({
-                target: { tabId: tabs[0].id },
-                function: (url) => {
-                  window.location.href = url;
-                },
-                args: [firstUrl],
-              });
+                conversationHistory.push({ role: "assistant", content: botMessage.outerHTML });
+                localStorage.setItem(
+                    "conversationHistory",
+                    JSON.stringify(conversationHistory)
+                );
+
+                // If URL is available, redirect; otherwise, continue with conversation
+                if (url) {
+                    chrome.tabs.query(
+                        { active: true, currentWindow: true },
+                        function (tabs) {
+                            const firstUrl = url; // Assuming `url` contains the extracted URL
+                            chrome.scripting.executeScript({
+                                target: { tabId: tabs[0].id },
+                                function: (url) => {
+                                    window.location.href = url;
+                                },
+                                args: [firstUrl],
+                            });
+                        }
+                    );
+                }
+                document.getElementById("user-input").value = "";
+                scrollToBottom();
+            } catch (error) {
+                botMessage.textContent = "Error: " + error.message;
             }
-          );
-        } else {
-          conversationHistory.push({ role: "assistant", content: newBotReply });
-          localStorage.setItem(
-            "conversationHistory",
-            JSON.stringify(conversationHistory)
-          );
         }
-
-        document.getElementById("user-input").value = "";
-      } catch (error) {
-        botMessage.textContent = "Error: " + error.message;
-      }
     }
-  }
 
-  document.getElementById("send-btn").addEventListener("click", sendMessage);
+    document.getElementById("send-btn").addEventListener("click", sendMessage);
 
-  document.getElementById("user-input").addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-      sendMessage();
-    }
-  });
-
-  // Event listener for the clear button
-  document.getElementById("clear-btn").addEventListener("click", () => {
-    localStorage.removeItem("conversationHistory");
-    conversationHistory.length = 0; // Clear the array
-    updateChatLog(); // Update the chat log to reflect the cleared history
-  });
-
-  function startListening() {
-    document.getElementById("listening-indicator").style.display = "block";
-  }
-
-  function stopListening() {
-    document.getElementById("listening-indicator").style.display = "none";
-  }
-
-  document.getElementById("voice-btn").addEventListener("click", async () => {
-    const messageDiv = document.getElementById("message");
-
-    try {
-      console.log("Requesting microphone access...");
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      console.log("Microphone access granted");
-      // messageDiv.textContent = 'Microphone access granted';
-
-      const recognition = new webkitSpeechRecognition();
-      recognition.lang = "en-US";
-      // recognition.onstart = () => console.log('Recognition started');
-      recognition.onstart = () => startListening();
-      recognition.onerror = (event) =>
-        console.error("Recognition error:", event);
-      // recognition.onresult = (event) => console.log('Recognition result:', event);
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        // console.log('Voice input recognized:', transcript);
-        document.getElementById("user-input").value = transcript;
-        // Automatically send the recognized text as a message
-        sendMessage();
-      };
-
-      recognition.onend = () => stopListening();
-
-      // recognition.onresult = (event) => {
-      //     console.log('Recognition result:', event);
-
-      //     // Extract the recognized speech result
-      //     const speechResult = event.results[0][0].transcript;
-      //     console.log('Recognized Speech:', speechResult);
-
-      //     // Display the result in the message div
-      //     messageDiv.textContent = 'Recognition result: ' + speechResult;
-      // };
-      recognition.start();
-    } catch (err) {
-      if (err.name === "NotAllowedError" || err.name === "SecurityError") {
-        messageDiv.textContent =
-          "Microphone access denied. Please enable it in your browser settings.";
-      } else if (err.name === "PermissionDismissedError") {
-        messageDiv.textContent =
-          "Microphone access dismissed. Please grant permission to use this feature.";
-      } else {
-        messageDiv.textContent =
-          "Error accessing the microphone: " + err.message;
-      }
-      console.error("Error accessing the microphone", err);
-    }
-  });
-
-  document.getElementById("open-welcome").addEventListener("click", () => {
-    chrome.tabs.create({ url: chrome.runtime.getURL("welcome.html") });
-  });
-
-  var navigateButton = document.getElementById("navigate-button");
-  var chatBox = document.getElementById("chat-box");
-  var filterSide = document.getElementById("filter-side");
-  var pillContain = document.getElementById("pill-container");
-  //var closePopup = document.getElementById("close-popup");
-
-  document
-    .getElementById("navigate-button")
-    .addEventListener("click", (event) => {
-      let value = navigateButton.innerText;
-      var chatBox = document.getElementById("chat-box");
-      //console.log(value);
-      if (value == "Let's Chat!") {
-        chatBox.style.display = "block";
-        filterSide.style.display = "none";
-        pillContain.style.display = "none";
-        navigateButton.innerText = "View Instructions";
-      }
-      if (value == "View Instructions") {
-        chatBox.style.display = "none";
-        filterSide.style.display = "block";
-        pillContain.style.display = "block";
-        navigateButton.innerText = "Let's Chat!";
-      }
+    document.getElementById("user-input").addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            sendMessage();
+        }
     });
 
-  //closePopup.onclick = function () {
-  //  window.close();
-  //};
+    // Event listener for the clear button
+    document.getElementById("clear-btn").addEventListener("click", () => {
+        localStorage.removeItem("conversationHistory");
+        conversationHistory.length = 0; // Clear the array
+        updateChatLog(); // Update the chat log to reflect the cleared history
+    });
 
-  /*document.getElementById("cart-button").addEventListener("click", function () {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      chrome.scripting.executeScript({
-        target: { tabId: tabs[0].id },
-        function: () => {
-          window.location.href =
-            "https://www.amazon.com/gp/cart/view.html?ref_=nav_cart";
-        },
+    function startListening() {
+        document.getElementById("listening-indicator").style.display = "block";
+    }
+
+    function stopListening() {
+        document.getElementById("listening-indicator").style.display = "none";
+    }
+
+    document.getElementById("voice-btn").addEventListener("click", async () => {
+        const messageDiv = document.getElementById("message");
+
+        try {
+            console.log("Requesting microphone access...");
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            console.log("Microphone access granted");
+            // messageDiv.textContent = 'Microphone access granted';
+
+            const recognition = new webkitSpeechRecognition();
+            recognition.lang = "en-US";
+            // recognition.onstart = () => console.log('Recognition started');
+            recognition.onstart = () => startListening();
+            recognition.onerror = (event) =>
+                console.error("Recognition error:", event);
+            // recognition.onresult = (event) => console.log('Recognition result:', event);
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                // console.log('Voice input recognized:', transcript);
+                document.getElementById("user-input").value = transcript;
+                // Automatically send the recognized text as a message
+                sendMessage();
+            };
+
+            recognition.onend = () => stopListening();
+            recognition.start();
+        } catch (err) {
+            if (err.name === "NotAllowedError" || err.name === "SecurityError") {
+                messageDiv.textContent =
+                    "Microphone access denied. Please enable it in your browser settings.";
+            } else if (err.name === "PermissionDismissedError") {
+                messageDiv.textContent =
+                    "Microphone access dismissed. Please grant permission to use this feature.";
+            } else {
+                messageDiv.textContent =
+                    "Error accessing the microphone: " + err.message;
+            }
+            console.error("Error accessing the microphone", err);
+        }
+    });
+
+    document.getElementById("open-welcome").addEventListener("click", () => {
+        chrome.tabs.create({ url: chrome.runtime.getURL("welcome.html") });
+    });
+
+
+    var closePopup = document.getElementById("close-popup");
+
+    document
+        .getElementById("navigate-button")
+        .addEventListener("click", (event) => {
+            let value = navigateButton.innerText;
+            var chatBox = document.getElementById("chat-box");
+            //console.log(value);
+            if (value == "Let's Chat!") {
+                chatBox.style.display = "block";
+                filterSide.style.display = "none";
+                pillContain.style.display = "none";
+                navigateButton.innerText = "View Instructions";
+                chatInput.focus();
+                scrollToBottom();
+            }
+            if (value == "View Instructions") {
+                chatBox.style.display = "none";
+                filterSide.style.display = "block";
+                pillContain.style.display = "block";
+                navigateButton.innerText = "Let's Chat!";
+            }
+        });
+
+    // document
+    //     .getElementById("navigate-button")
+    //     .addEventListener("keydown", (event) => {
+    //         if (event.key === "Enter") {
+    //             let value = navigateButton.innerText;
+    //             var chatBox = document.getElementById("chat-box");
+    //             console.log(value);
+    //             if (value == "Let's Chat!") {
+    //                 chatBox.style.display = "block";
+    //                 filterSide.style.display = "none";
+    //                 pillContain.style.display = "none";
+    //                 navigateButton.innerText = "View Instructions";
+    //                 chatInput.focus();
+    //             }
+    //         }
+    //     });
+
+    closePopup.onclick = function () {
+        window.close();
+    };
+
+    /*document.getElementById("cart-button").addEventListener("click", function () {
+      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        chrome.scripting.executeScript({
+          target: { tabId: tabs[0].id },
+          function: () => {
+            window.location.href =
+              "https://www.amazon.com/gp/cart/view.html?ref_=nav_cart";
+          },
+        });
       });
-    });
-  });*/
+    });*/
 });
