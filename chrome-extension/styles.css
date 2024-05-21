@@ -114,4 +114,6 @@
 
 #chat-log {
   background-color: #f9f9f9;
+  min-height: 250px;
+  overflow: auto;
 }
