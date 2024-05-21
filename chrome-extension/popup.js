@@ -234,18 +234,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
   var navigateButton = document.getElementById("navigate-button");
   var chatBox = document.getElementById("chat-box");
-  var closePopup = document.getElementById("close-popup");
+  var filterSide = document.getElementById("filter-side");
+  var pillContain = document.getElementById("pill-container");
+  //var closePopup = document.getElementById("close-popup");
 
-  document.getElementById("navigate-button").addEventListener("click", () => {
-    console.log("button clicked");
-    chatBox.style.display = "block";
-  });
+  document
+    .getElementById("navigate-button")
+    .addEventListener("click", (event) => {
+      let value = navigateButton.innerText;
+      var chatBox = document.getElementById("chat-box");
+      //console.log(value);
+      if (value == "Let's Chat!") {
+        chatBox.style.display = "block";
+        filterSide.style.display = "none";
+        pillContain.style.display = "none";
+        navigateButton.innerText = "View Instructions";
+      }
+      if (value == "View Instructions") {
+        chatBox.style.display = "none";
+        filterSide.style.display = "block";
+        pillContain.style.display = "block";
+        navigateButton.innerText = "Let's Chat!";
+      }
+    });
 
-  closePopup.onclick = function () {
-    window.close();
-  };
+  //closePopup.onclick = function () {
+  //  window.close();
+  //};
 
-  document.getElementById("cart-button").addEventListener("click", function () {
+  /*document.getElementById("cart-button").addEventListener("click", function () {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       chrome.scripting.executeScript({
         target: { tabId: tabs[0].id },
@@ -255,11 +272,5 @@ document.addEventListener("DOMContentLoaded", () => {
         },
       });
     });
-  });
-
-  window.onclick = function (event) {
-    if (event.target == navigateButton) {
-      chatBox.style.display = "block";
-    }
-  };
+  });*/
 });
