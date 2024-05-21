@@ -18,6 +18,13 @@ document.addEventListener("DOMContentLoaded", () => {
     var filterSide = document.getElementById("filter-side");
     var pillContain = document.getElementById("pill-container");
 
+    const saveState = () => {
+        chrome.storage.local.set({
+            chatBoxVisible: chatBox.style.display !== "none",
+            conversationHistory: conversationHistory
+        });
+    };
+
     // Function to update the chat log
     function updateChatLog() {
         chatLog.innerHTML = ""; // Clear the existing chat log
@@ -46,12 +53,29 @@ document.addEventListener("DOMContentLoaded", () => {
             filterSide.style.display = "none";
             pillContain.style.display = "none";
             navigateButton.innerText = "View Instructions";
+            chatInput.focus();
             scrollToBottom();
         }
     }
 
+    // Restore state from chrome.storage
+    chrome.storage.local.get(['chatBoxVisible', 'conversationHistory'], (result) => {
+        if (result.chatBoxVisible !== undefined) {
+            chatBox.style.display = result.chatBoxVisible ? "block" : "none";
+            filterSide.style.display = result.chatBoxVisible ? "none" : "block";
+            pillContain.style.display = result.chatBoxVisible ? "none" : "block";
+            navigateButton.innerText = result.chatBoxVisible ? "View Instructions" : "Let's Chat!";
+        }
+
+        if (result.conversationHistory) {
+            conversationHistory.push(...result.conversationHistory);
+            updateChatLog();
+        }
+    });
+
     // Initial update of the chat log on page load
-    updateChatLog();
+    // saveState();
+    // updateChatLog();
 
     async function sendMessage() {
         const userInput = document.getElementById("user-input").value;
@@ -121,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Regular expression to match URLs
                 const urlPattern = /https?:\/\/[^\s]+/g;
                 const urlMatch = reply.match(urlPattern);
-                const url = urlMatch ? urlMatch[0] : null;
+                const url = urlMatch ? urlMatch[0].slice(0, -1) : null;
 
                 // Replace URLs with buttons
                 reply = reply.replace(
@@ -157,6 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     );
                 }
                 document.getElementById("user-input").value = "";
+                chatInput.focus();
                 scrollToBottom();
             } catch (error) {
                 botMessage.textContent = "Error: " + error.message;
@@ -164,11 +189,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    document.getElementById("send-btn").addEventListener("click", sendMessage);
+    document.getElementById("send-btn").addEventListener("click", () => {
+        sendMessage();
+        saveState();
+    });
 
     document.getElementById("user-input").addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
             sendMessage();
+            saveState();
         }
     });
 
@@ -177,6 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.removeItem("conversationHistory");
         conversationHistory.length = 0; // Clear the array
         updateChatLog(); // Update the chat log to reflect the cleared history
+        saveState();
     });
 
     function startListening() {
@@ -209,6 +239,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById("user-input").value = transcript;
                 // Automatically send the recognized text as a message
                 sendMessage();
+                saveState();
             };
 
             recognition.onend = () => stopListening();
@@ -255,6 +286,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 pillContain.style.display = "block";
                 navigateButton.innerText = "Let's Chat!";
             }
+            saveState();
         });
 
     // document
