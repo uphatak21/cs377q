@@ -7,15 +7,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const conversationHistory =
         JSON.parse(localStorage.getItem("conversationHistory")) || [];
 
-    const chatContainer = document.getElementById('chat-log');
-    const scrollToBottom = () => {
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-    };
+  // initial elements on onboarding
+  var navigateButton = document.getElementById("navigate-button");
+  var chatBox = document.getElementById("chat-box");
+  var filterSide = document.getElementById("filter-side");
+  var pillContain = document.getElementById("pill-container");
 
-    // Function to update the chat log
-    function updateChatLog() {
-        chatLog.innerHTML = ""; // Clear the existing chat log
-        const addedMessages = new Set(); // Set to track added messages
+  // Function to update the chat log
+  function updateChatLog() {
+    chatLog.innerHTML = ""; // Clear the existing chat log
+    const addedMessages = new Set(); // Set to track added messages
+
+    // adding something so that chat is still open when there are conversations
+    if (conversationHistory.length > 0) {
+      chatBox.style.display = "block";
+      filterSide.style.display = "none";
+      pillContain.style.display = "none";
+      navigateButton.innerText = "View Instructions";
+    }
 
         conversationHistory.forEach((message) => {
             if (!addedMessages.has(message.content)) {
@@ -217,11 +226,8 @@ document.addEventListener("DOMContentLoaded", () => {
         chrome.tabs.create({ url: chrome.runtime.getURL("welcome.html") });
     });
 
-    var navigateButton = document.getElementById("navigate-button");
-    var chatBox = document.getElementById("chat-box");
-    var filterSide = document.getElementById("filter-side");
-    var pillContain = document.getElementById("pill-container");
-    var closePopup = document.getElementById("close-popup");
+  
+  //var closePopup = document.getElementById("close-popup");
 
     document
         .getElementById("navigate-button")
