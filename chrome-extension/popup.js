@@ -145,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Regular expression to match URLs
                 const urlPattern = /https?:\/\/[^\s]+/g;
                 const urlMatch = reply.match(urlPattern);
-                const url = urlMatch ? urlMatch[0].slice(0, -1) : null;
+                const url = urlMatch ? urlMatch[0].slice(1, -1) : null;
 
                 // Replace URLs with buttons
                 reply = reply.replace(
