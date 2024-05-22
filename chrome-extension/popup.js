@@ -4,8 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
     chatInput.focus();
 
     const chatLog = document.getElementById("chat-log");
-    const conversationHistory =
-        JSON.parse(localStorage.getItem("conversationHistory")) || [];
+    const conversationHistory = JSON.parse(localStorage.getItem("conversationHistory")) || [];
 
     const chatContainer = document.getElementById('chat-log');
     const scrollToBottom = () => {
@@ -73,10 +72,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Initial update of the chat log on page load
-    // saveState();
-    // updateChatLog();
-
     async function sendMessage() {
         const userInput = document.getElementById("user-input").value;
 
@@ -87,10 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
             chatLog.appendChild(userMessage);
 
             conversationHistory.push({ role: "user", content: userInput });
-            localStorage.setItem(
-                "conversationHistory",
-                JSON.stringify(conversationHistory)
-            );
+            localStorage.setItem("conversationHistory", JSON.stringify(conversationHistory));
 
             SYSTEM_PROMPT = `"You are ChatGPT, a large language model
             trained by OpenAI, based on the GPT-4o architecture.
@@ -111,23 +103,20 @@ document.addEventListener("DOMContentLoaded", () => {
             chatLog.appendChild(botMessage);
 
             try {
-                const response = await fetch(
-                    "https://api.openai.com/v1/chat/completions",
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer sk-proj-wpHnKm4mAg0c4p32Fd4eT3BlbkFJMshL5U0ajCnVbk9Uy8py`,
-                        },
-                        body: JSON.stringify({
-                            model: "gpt-4o",
-                            messages: conversationHistory.concat([
-                                { role: "system", content: SYSTEM_PROMPT },
-                                { role: "user", content: userInput },
-                            ]),
-                        }),
-                    }
-                );
+                const response = await fetch("https://api.openai.com/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer sk-proj-wpHnKm4mAg0c4p32Fd4eT3BlbkFJMshL5U0ajCnVbk9Uy8py`,
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-4o",
+                        messages: conversationHistory.concat([
+                            { role: "system", content: SYSTEM_PROMPT },
+                            { role: "user", content: userInput },
+                        ]),
+                    }),
+                });
 
                 // IN CASE AUTOMATIC REDIRECTION IS NOT POSSIBLE
                 const data = await response.json();
@@ -142,10 +131,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 reply = reply.replace(productPattern, " "); // removing the product from the ChatGPT prompt
 
+                function removeSurroundingParentheses(str) {
+                    // Check for opening parenthesis at the start and closing parenthesis at the end
+                    if (url) {
+                        if (str.startsWith('(')) {
+                            str = str.slice(1); // Remove the first character
+                        }
+                        if (str.endsWith(')')) {
+                            str = str.slice(0, -1); // Remove the last character
+                        }
+                    }
+                    return str;
+                }
+
                 // Regular expression to match URLs
                 const urlPattern = /https?:\/\/[^\s]+/g;
                 const urlMatch = reply.match(urlPattern);
-                const url = urlMatch ? urlMatch[0].slice(1, -1) : null;
+                let rawUrl = urlMatch ? urlMatch[0] : null;
+                const url = removeSurroundingParentheses(rawUrl);
+                // console.log(`url match: ${urlMatch}`);
+                // console.log(`url: ${url}`);
 
                 // Replace URLs with buttons
                 reply = reply.replace(
@@ -159,10 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 botMessage.innerHTML = newBotReply;
 
                 conversationHistory.push({ role: "assistant", content: botMessage.outerHTML });
-                localStorage.setItem(
-                    "conversationHistory",
-                    JSON.stringify(conversationHistory)
-                );
+                localStorage.setItem("conversationHistory", JSON.stringify(conversationHistory));
 
                 // If URL is available, redirect; otherwise, continue with conversation
                 if (url) {
@@ -224,20 +226,14 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log("Requesting microphone access...");
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             console.log("Microphone access granted");
-            // messageDiv.textContent = 'Microphone access granted';
 
             const recognition = new webkitSpeechRecognition();
             recognition.lang = "en-US";
-            // recognition.onstart = () => console.log('Recognition started');
             recognition.onstart = () => startListening();
-            recognition.onerror = (event) =>
-                console.error("Recognition error:", event);
-            // recognition.onresult = (event) => console.log('Recognition result:', event);
+            recognition.onerror = (event) => console.error("Recognition error:", event);
             recognition.onresult = (event) => {
                 const transcript = event.results[0][0].transcript;
-                // console.log('Voice input recognized:', transcript);
                 document.getElementById("user-input").value = transcript;
-                // Automatically send the recognized text as a message
                 sendMessage();
                 saveState();
             };
@@ -246,14 +242,11 @@ document.addEventListener("DOMContentLoaded", () => {
             recognition.start();
         } catch (err) {
             if (err.name === "NotAllowedError" || err.name === "SecurityError") {
-                messageDiv.textContent =
-                    "Microphone access denied. Please enable it in your browser settings.";
+                messageDiv.textContent = "Microphone access denied. Please enable it in your browser settings.";
             } else if (err.name === "PermissionDismissedError") {
-                messageDiv.textContent =
-                    "Microphone access dismissed. Please grant permission to use this feature.";
+                messageDiv.textContent = "Microphone access dismissed. Please grant permission to use this feature.";
             } else {
-                messageDiv.textContent =
-                    "Error accessing the microphone: " + err.message;
+                messageDiv.textContent = "Error accessing the microphone: " + err.message;
             }
             console.error("Error accessing the microphone", err);
         }
@@ -263,31 +256,27 @@ document.addEventListener("DOMContentLoaded", () => {
         chrome.tabs.create({ url: chrome.runtime.getURL("welcome.html") });
     });
 
-
     var closePopup = document.getElementById("close-popup");
 
-    document
-        .getElementById("navigate-button")
-        .addEventListener("click", (event) => {
-            let value = navigateButton.innerText;
-            var chatBox = document.getElementById("chat-box");
-            //console.log(value);
-            if (value == "Let's Chat!") {
-                chatBox.style.display = "block";
-                filterSide.style.display = "none";
-                pillContain.style.display = "none";
-                navigateButton.innerText = "View Instructions";
-                chatInput.focus();
-                scrollToBottom();
-            }
-            if (value == "View Instructions") {
-                chatBox.style.display = "none";
-                filterSide.style.display = "block";
-                pillContain.style.display = "block";
-                navigateButton.innerText = "Let's Chat!";
-            }
-            saveState();
-        });
+    document.getElementById("navigate-button").addEventListener("click", (event) => {
+        let value = navigateButton.innerText;
+        var chatBox = document.getElementById("chat-box");
+        if (value == "Let's Chat!") {
+            chatBox.style.display = "block";
+            filterSide.style.display = "none";
+            pillContain.style.display = "none";
+            navigateButton.innerText = "View Instructions";
+            chatInput.focus();
+            scrollToBottom();
+        }
+        if (value == "View Instructions") {
+            chatBox.style.display = "none";
+            filterSide.style.display = "block";
+            pillContain.style.display = "block";
+            navigateButton.innerText = "Let's Chat!";
+        }
+        saveState();
+    });
 
     // document
     //     .getElementById("navigate-button")
