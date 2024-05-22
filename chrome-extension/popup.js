@@ -39,12 +39,12 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        chatLog.addEventListener("click", (event) => {
-            if (event.target.classList.contains("link-button")) {
-                const url = event.target.getAttribute("data-url");
-                window.open(url, "_blank");
-            }
-        });
+        // chatLog.addEventListener("click", (event) => {
+        //     if (event.target.classList.contains("hyperlink")) {
+        //         const url = event.target.getAttribute("data-url");
+        //         window.open(url, "_blank");
+        //     }
+        // });
 
         // adding something so that chat is still open when there are conversations
         if (conversationHistory.length > 0) {
@@ -121,19 +121,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 // IN CASE AUTOMATIC REDIRECTION IS NOT POSSIBLE
                 const data = await response.json();
                 let reply = data.choices[0].message.content.trim();
-                const productPattern = /\[([^[\]]+)\]/; // extract product from user message
+                console.log(reply);
+                // const productPattern = /\[([^[\]]+)\]/; // extract product from user message
 
-                // Match the product term in the text using the pattern
-                const match = reply.match(productPattern);
+                // // Match the product term in the text using the pattern
+                // const match = reply.match(productPattern);
 
-                // Extract the product term from the match
-                const product = match ? match[1] : null;
+                // // Extract the product term from the match
+                // const product = match ? match[1] : null;
 
-                reply = reply.replace(productPattern, " "); // removing the product from the ChatGPT prompt
+                // reply = reply.replace(productPattern, " "); // removing the product from the ChatGPT prompt
 
                 function removeSurroundingParentheses(str) {
                     // Check for opening parenthesis at the start and closing parenthesis at the end
-                    if (url) {
+                    if (str) {
                         if (str.startsWith('(')) {
                             str = str.slice(1); // Remove the first character
                         }
@@ -145,23 +146,45 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
                 // Regular expression to match URLs
-                const urlPattern = /https?:\/\/[^\s]+/g;
+                const urlPattern = /(\[|\()?https?:\/\/[^\s\[\]()]+(\]|\))?/g;
+                // const urlPattern = /https?:\/\/[^\s]+/g;
                 const urlMatch = reply.match(urlPattern);
-                let rawUrl = urlMatch ? urlMatch[0] : null;
+                // let rawUrl = urlMatch ? urlMatch[0] : null;
+                let rawUrl = urlMatch ? urlMatch[0].replace(/[\[\]()]/g, '') : null;
                 const url = removeSurroundingParentheses(rawUrl);
-                // console.log(`url match: ${urlMatch}`);
-                // console.log(`url: ${url}`);
+
+                if (urlMatch) {
+                    if (urlMatch.length === 2) {
+                        // Replace the first match with "Link" and the second with an empty string
+                        reply = reply.replace(urlMatch[0], '<a href="' + url + '" target="_blank">Link</a>');
+                        reply = reply.replace(urlMatch[1], '');
+                    } else {
+                        // Replace the single match with "Link"
+                        reply = reply.replace(urlMatch[0], '<a href="' + url + '" target="_blank">Link</a>');
+                    }
+                }
+
+                console.log(`url match: ${urlMatch}`);
+                console.log(`url: ${url}`);
 
                 // Replace URLs with buttons
-                reply = reply.replace(
-                    urlPattern,
-                    (url) =>
-                        `<div class="button-container"><button class="link-button" id="link-btn" data-url="${url}">${product}</button></div>`
-                );
+                // reply = reply.replace(
+                //     urlPattern,
+                //     (url) =>
+                //         `<a class="hyperlink" href="${url}" target="_blank">Link</a>`
+                // );
+
+                // `<div class="button-container"><button class="link-button" data-url="${url}">${product}</button></div>`
 
                 // Set the modified reply as innerHTML to render the links
                 const newBotReply = reply.replace(/: \[([^[\]]+)\]\(/, "");
+                console.log(newBotReply);
+
+
+
                 botMessage.innerHTML = newBotReply;
+
+                console.log(botMessage);
 
                 conversationHistory.push({ role: "assistant", content: botMessage.outerHTML });
                 localStorage.setItem("conversationHistory", JSON.stringify(conversationHistory));
