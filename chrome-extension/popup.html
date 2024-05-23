@@ -7,14 +7,14 @@
       body {
         font-family: Arial, sans-serif;
       }
-      #chat-container {
+      /* #chat-container {
         width: 300px;
         height: 550px;
         overflow-y: auto;
         border: 1px solid #ccc;
         padding: 20px;
         text-align: center;
-      }
+      } */
       #user-input {
         width: calc(100% - 22px);
         padding: 10px;
@@ -135,25 +135,22 @@
         <button id="close-popup"></button>
       </div>
     <div id="chat-container">
-      <p class="instr title">
-        Welcome to <br /> <b>Shopbot on Amazon</b>! <br />
-      </p>
-      <p class="instr">
-        <i>Say goodbye to small click targets!</i> <br />Ask the chatbot <b>what item you want to purchase</b> and <b>narrow your
-          search</b> by telling your bot more details.<br />
+      <p class="instr title"> <b>Shopbot on Amazon!</b></p>
+      <p class="instr" id="top-instr">Ask the chatbot <b>what item you want to purchase</b> and <b>narrow your
+          search</b> by telling your bot more details.
       </p>
         
       <div id="chat-box">
         <div id="chat-log"></div>
         <div id="send-bar">
           <input type="text" id="user-input" placeholder="Type a message..." />
-          <button id="send-btn" class="buttons"><i class="material-icons">send</i>Send</button>
-        </div>
-        <div id="actions-bar">
           <button id="voice-btn" class="buttons">
             <i class="material-icons">mic</i>
             <br>Voice Input
           </button>
+          <button id="send-btn" class="buttons"><i class="material-icons">send</i>Send</button>
+        </div>
+        <div id="actions-bar">
           <button id="clear-btn" class="buttons">
             <i class="material-icons">clear_all</i>
             <br>Clear Chat
