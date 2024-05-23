@@ -121,7 +121,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 // IN CASE AUTOMATIC REDIRECTION IS NOT POSSIBLE
                 const data = await response.json();
                 let reply = data.choices[0].message.content.trim();
-                console.log(reply);
                 // const productPattern = /\[([^[\]]+)\]/; // extract product from user message
 
                 // // Match the product term in the text using the pattern
@@ -144,6 +143,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                     return str;
                 }
+
+                // cut out the item in brackets if it exists in response, e.g. "[Amazon - Pet Rock Kit]"
+                reply = reply.replace(/ *\[[^)]*\] */g, "");
 
                 // Regular expression to match URLs
                 const urlPattern = /(\[|\()?https?:\/\/[^\s\[\]()]+(\]|\))?/g;
@@ -321,16 +323,4 @@ document.addEventListener("DOMContentLoaded", () => {
     closePopup.onclick = function () {
         window.close();
     };
-
-    /*document.getElementById("cart-button").addEventListener("click", function () {
-      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        chrome.scripting.executeScript({
-          target: { tabId: tabs[0].id },
-          function: () => {
-            window.location.href =
-              "https://www.amazon.com/gp/cart/view.html?ref_=nav_cart";
-          },
-        });
-      });
-    });*/
 });
