@@ -156,11 +156,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (urlMatch) {
                     if (urlMatch.length === 2) {
                         // Replace the first match with "Link" and the second with an empty string
-                        reply = reply.replace(urlMatch[0], '<a href="' + url + '" target="_blank">Link</a>');
+                        reply = reply.replace(urlMatch[0], '<a href="' + url + '"class="custom-link" target="_blank">Link</a>');
                         reply = reply.replace(urlMatch[1], '');
                     } else {
                         // Replace the single match with "Link"
-                        reply = reply.replace(urlMatch[0], '<a href="' + url + '" target="_blank">Link</a>');
+                        reply = reply.replace(urlMatch[0], '<a href="' + url + '"class="custom-link" target="_blank">Link</a>');
                     }
                 }
 
