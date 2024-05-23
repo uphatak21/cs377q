@@ -12,10 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // initial elements on onboarding
-    var navigateButton = document.getElementById("navigate-button");
     var chatBox = document.getElementById("chat-box");
-    var filterSide = document.getElementById("filter-side");
-    var pillContain = document.getElementById("pill-container");
 
     const saveState = () => {
         chrome.storage.local.set({
@@ -45,27 +42,10 @@ document.addEventListener("DOMContentLoaded", () => {
         //         window.open(url, "_blank");
         //     }
         // });
-
-        // adding something so that chat is still open when there are conversations
-        if (conversationHistory.length > 0) {
-            chatBox.style.display = "block";
-            filterSide.style.display = "none";
-            pillContain.style.display = "none";
-            navigateButton.innerText = "View Instructions";
-            chatInput.focus();
-            scrollToBottom();
-        }
     }
 
     // Restore state from chrome.storage
     chrome.storage.local.get(['chatBoxVisible', 'conversationHistory'], (result) => {
-        if (result.chatBoxVisible !== undefined) {
-            chatBox.style.display = result.chatBoxVisible ? "block" : "none";
-            filterSide.style.display = result.chatBoxVisible ? "none" : "block";
-            pillContain.style.display = result.chatBoxVisible ? "none" : "block";
-            navigateButton.innerText = result.chatBoxVisible ? "View Instructions" : "Let's Chat!";
-        }
-
         if (result.conversationHistory) {
             conversationHistory.push(...result.conversationHistory);
             updateChatLog();
@@ -282,25 +262,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     var closePopup = document.getElementById("close-popup");
+    var dialog = document.querySelector("dialog");
 
-    document.getElementById("navigate-button").addEventListener("click", (event) => {
-        let value = navigateButton.innerText;
-        var chatBox = document.getElementById("chat-box");
-        if (value == "Let's Chat!") {
-            chatBox.style.display = "block";
-            filterSide.style.display = "none";
-            pillContain.style.display = "none";
-            navigateButton.innerText = "View Instructions";
-            chatInput.focus();
-            scrollToBottom();
-        }
-        if (value == "View Instructions") {
-            chatBox.style.display = "none";
-            filterSide.style.display = "block";
-            pillContain.style.display = "block";
-            navigateButton.innerText = "Let's Chat!";
-        }
-        saveState();
+    
+    document.getElementById("help-button").addEventListener("click", () => {   
+        dialog.showModal();
+    });
+
+    document.getElementById("close-modal").addEventListener("click", () => {   
+        dialog.close();
     });
 
     // document

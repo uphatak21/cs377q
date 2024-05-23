@@ -22,6 +22,8 @@
 
   #top-buttons {
     float:right;
+    display: flex;
+    flex-direction: row;
   }
 
   #actions-bar {
@@ -156,4 +158,26 @@
 
 #top-instr {
   margin-bottom: 10px;
+}
+
+#help-modal {
+  padding: 20px;
+  width: 80%;
+}
+
+#close-modal {
+  float: right;
+  width: 20px;
+  height: 20px;
+  background-color: transparent;
+  border: none;
+  display:flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  box-sizing: border-box;
+  font-size: 18px;
+  font-weight: bold;
+  color: #000;
 }
