@@ -11,6 +11,9 @@
     overflow-y: scroll;
     border-bottom: 1px solid #ccc;
     margin-bottom: 10px;
+    background-color: #f9f9f9;
+    min-height: 250px;
+    overflow: auto;
   }
 
   #instructions-text {
@@ -20,41 +23,13 @@
   #top-buttons {
     float:right;
   }
-  
-  .message {
-    padding: 5px;
-    margin: 5px 0;
-  }
-  
-  .message.user {
-    background-color: #e2f4f5;
-    text-align: right;
-    padding: 10px;
-    margin: 10px;
-    border-radius: 10px 10px 10px 10px;
-  }
-  
-  .message.bot {
-    background-color: #FFF2DE;
-    border-radius: 10px 10px 10px 10px;
-    text-align: left;
-    color: #AD7116;
-    padding: 10px;
-    margin: 10px;
-  }
 
-  .message.bot div {
-    background-color: #FFF2DE;
-    border-radius: 10px 10px 10px 10px;
-    text-align: left;
-    color: #AD7116;
-    padding: 10px;
-    margin: 10px;
-  }
-  
-  .user {
-    color: #175e61;
-    font-family: "Noto Sans", sans-serif;
+  #actions-bar {
+    margin: 5px 10px;
+    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .bot {
@@ -76,10 +51,54 @@
     border-radius: 12px; /* Rounded corners */
   }
 
+  .custom-link {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 20px;
+    text-align: center;
+    display: block;
+  }
+
   .instr {
-    color: #175e61;
+    color: #15595B;
     font-size: 16px;
     margin-bottom: 0px;
+  }
+  
+  .message {
+    padding: 5px;
+    margin: 5px 0;
+  }
+  
+  .message.user {
+    background-color: #e2f4f5;
+    text-align: right;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 10px 10px 10px 10px;
+  }
+  
+  .message.bot {
+    background-color: #FFF2DE;
+    border-radius: 10px 10px 10px 10px;
+    text-align: left;
+    color: #6E4911;
+    padding: 10px;
+    margin: 10px;
+  }
+
+  .message.bot div {
+    background-color: #FFF2DE;
+    border-radius: 10px 10px 10px 10px;
+    text-align: left;
+    color: #6E4911;
+    padding: 10px;
+    margin: 10px;
+  }
+  
+  .user {
+    color: #15595B;
+    font-family: "Noto Sans", sans-serif;
   }
 
   .title {
