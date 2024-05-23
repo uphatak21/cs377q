@@ -1,7 +1,9 @@
 #chat-container {
-    width: 300px;
+    width: 500px;
     padding: 10px;
-    border: 1px solid #ccc;
+    margin: 0px 0px 0px 0px;
+    text-align: center;
+
   }
   
   #chat-log {
@@ -77,9 +79,12 @@
   .instr {
     color: #175e61;
     font-size: 16px;
+    margin-bottom: 0px;
   }
 
   .title {
+    margin-top: 10px;
+    margin-bottom: 5px;
     font-size: 20px;
   }
 
@@ -108,7 +113,7 @@
   margin: 5px 10px;
   text-align: center;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   align-items: center;
 }
 
@@ -116,4 +121,20 @@
   background-color: #f9f9f9;
   min-height: 250px;
   overflow: auto;
+}
+
+#send-bar {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#user-input {
+  margin-right: 10px;
+  border-radius: 5px;
+  border: 1 solid #175e61;
+  font-size: 14px;
+}
+
+#top-instr {
+  margin-bottom: 10px;
 }
