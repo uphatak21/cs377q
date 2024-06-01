@@ -22,6 +22,8 @@
 
   #top-buttons {
     float:right;
+    display: flex;
+    flex-direction: row;
   }
 
   #actions-bar {
@@ -40,7 +42,6 @@
   .buttons {
     color: darkslategray;
     background-color: #e2f4f5; /* Green background */
-    border: solid; /* Remove borders */
     padding: 8px 16px; /* Some padding */
     text-align: center; /* Center the text */
     text-decoration: none; /* Remove underline */
@@ -49,6 +50,7 @@
     margin: 4px 2px; /* Add some margin */
     cursor: pointer; /* Add a pointer on hover */
     border-radius: 12px; /* Rounded corners */
+    box-shadow: rgba(255, 255, 255, 0.26) 0 1px 2px inset;
   }
 
   .custom-link {
@@ -118,7 +120,8 @@
 }
 
 .link-button:hover{
-  box-shadow: 0 5px 5px 0 rgba(0,0,0,0.14), 0 5px 5px 0 rgba(0,0,0,0.09);
+  border-color: #dadce0;
+  box-shadow: rgba(0, 0, 0, .1) 0 1px 1px;
 }
 
 .button-container {
@@ -156,4 +159,26 @@
 
 #top-instr {
   margin-bottom: 10px;
+}
+
+#help-modal {
+  padding: 20px;
+  width: 80%;
+}
+
+#close-modal {
+  float: right;
+  width: 20px;
+  height: 20px;
+  background-color: transparent;
+  border: none;
+  display:flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  box-sizing: border-box;
+  font-size: 18px;
+  font-weight: bold;
+  color: #000;
 }

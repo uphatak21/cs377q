@@ -26,10 +26,10 @@ function styleButtons() {
       "No buttons or text elements found with the specified selectors."
     );
   }
-
+  /*
   let sideBar = document.getElementById("s-refinements");
   sideBar.style.boxShadow = "0px 0px 7px 5px rgba(52,194,199,1)";
-  sideBar.style.padding = "10px";
+  sideBar.style.padding = "10px";*/
 }
 
 // Run the function on DOMContentLoaded

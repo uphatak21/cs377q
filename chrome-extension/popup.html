@@ -7,14 +7,11 @@
       body {
         font-family: Arial, sans-serif;
       }
-      /* #chat-container {
-        width: 300px;
-        height: 550px;
-        overflow-y: auto;
-        border: 1px solid #ccc;
-        padding: 20px;
-        text-align: center;
-      } */
+      #chat-container {
+        display: flex;
+        align-items: "center";
+        flex-direction: column;
+      }
       #user-input {
         width: calc(100% - 22px);
         padding: 10px;
@@ -44,11 +41,8 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        overflow-y: auto;
         margin-top: 20px;
         margin-bottom: 20px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
         padding-left: 10px;
         padding-right: 10px;
       }
@@ -61,12 +55,15 @@
         height: 20px;
         background-color: transparent;
         border: none;
-        padding: 2px 4px;
+        display:flex;
+        text-align: center;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+        box-sizing: border-box;
         font-size: 18px;
         font-weight: bold;
         color: #000;
-        align-items: center;
-        justify-content: center;
       }
       #close-popup::before {
         content: "x"; /* Unicode character for "X" */
@@ -74,7 +71,7 @@
       button {
         color: #175e61;
         background-color: #e2f4f5; /* Green background */
-        border: solid; /* Remove borders */
+        border: none;
         padding: 8px 16px; /* Some padding */
         text-align: center; /* Center the text */
         text-decoration: none; /* Remove underline */
@@ -82,12 +79,14 @@
         font-size: 16px; /* Increase font size */
         margin: 4px 2px; /* Add some margin */
         cursor: pointer; /* Add a pointer on hover */
-        border-radius: 12px; /* Rounded corners */
+        border-radius: 10px; /* Rounded corners */
         transition-duration: 0.4s;
+        box-shadow: rgba(255, 255, 255, 0.26) 0 1px 2px inset;
       }
       button:hover {
-        box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24),
-          0 17px 50px 0 rgba(0, 0, 0, 0.19);
+        background-color: #b1ebf8; /* Darker Green background */
+        border-color: #dadce0;
+        box-shadow: rgba(0, 0, 0, .1) 0 1px 1px;
       }
       .close {
         color: #aaa;
@@ -113,16 +112,13 @@
         border-radius: 5px;
         z-index: 1000;
       }
-      #chat-box {
-        display: none;
-      }
       #filter-side {
         height: fit-content;
         width: fit-content;
         box-shadow: 0px 0px 5px 3px rgba(52,194,199,1);
         box-sizing: border-box;
         padding: 10px;
-        margin-top: 30px;
+        margin-top: 60px;
       }
       #navigate-button {
         padding: 20px 50px;
@@ -132,8 +128,9 @@
   </head>
   <body>
     <div id="top-buttons">
+        <button id="help-button">help</button>
         <button id="close-popup"></button>
-      </div>
+    </div>
     <div id="chat-container">
       <p class="instr title"> <b>Shopbot on Amazon!</b></p>
       <p class="instr" id="top-instr">Ask the chatbot <b>what item you want to purchase</b> and <b>narrow your
@@ -161,10 +158,14 @@
         </button>
         <div id="message"></div>
       </div>
-      <button id="navigate-button">Let's Chat!</button>
-      <p class="instr" id="filter-side"> Look at the filter side bar highlighted in blue on the left side
-        of your screen! This bar shows options for how you can narrow your search.
+      <dialog id="help-modal">
+      <button id="close-modal" class="close">x</button>
+      <p class="instr" id="filter-side"> What should I filter for? Look at Amazon's filter bar
+        on the left-side of your screen after you search. There are a bunch of filter options!
       </p>
+      <br />
+      <p class="instr"> <b>Chat Examples</b></p>
+      <hr />
       <div id="pill-container">
         <div id="pill" class="instr">
           "I want headphones that are noise cancelling"
@@ -181,7 +182,7 @@
           "I want headphones that do Prime delivery"
         </div>
       </div>
-    
+     </dialog>
       <p class="instr" > Try this keyboard shortcut to open and close the bot without clicking: <br /><br />
         <b> Command/Control + Shift + 'Y'</b>
       </p>
