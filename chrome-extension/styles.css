@@ -64,7 +64,6 @@
   .instr {
     color: #15595B;
     font-size: 16px;
-    margin-bottom: 0px;
   }
   
   .message {
@@ -157,9 +156,6 @@
   font-size: 14px;
 }
 
-#top-instr {
-  margin-bottom: 10px;
-}
 
 #help-modal {
   padding: 20px;
@@ -181,4 +177,130 @@
   font-size: 18px;
   font-weight: bold;
   color: #000;
+  border: 1px solid rgba(0, 0, 0, .1);
+}
+
+body {
+  font-family: Arial, sans-serif;
+}
+#chat-container {
+  display: flex;
+  align-items: "center";
+  flex-direction: column;
+}
+#user-input {
+  width: calc(100% - 22px);
+  padding: 10px;
+}
+.message {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+#pill {
+  width: 99%;
+  min-height: 30%;
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  border-radius: 5px;
+  text-align: center;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#pill-container {
+  width: 100%;
+  height: 200px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+#send-bar {
+  display: flex;
+  flex-direction: row;
+}
+#close-popup {
+  width: 20px;
+  height: 20px;
+  background-color: transparent;
+  border: none;
+  display:flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  box-sizing: border-box;
+  font-size: 18px;
+  font-weight: bold;
+  color: #000;
+  border: 1px solid rgba(0, 0, 0, .1);
+}
+#close-popup::before {
+  content: "x"; /* Unicode character for "X" */
+}
+button {
+  color: #175e61;
+  background-color: #e2f4f5; /* Green background */
+  border: none;
+  padding: 8px 16px; /* Some padding */
+  text-align: center; /* Center the text */
+  text-decoration: none; /* Remove underline */
+  display: inline-block; /* Get the element to align properly */
+  font-size: 16px; /* Increase font size */
+  margin: 4px 2px; /* Add some margin */
+  cursor: pointer; /* Add a pointer on hover */
+  border-radius: 10px; /* Rounded corners */
+  transition-duration: 0.4s;
+  box-shadow: rgba(255, 255, 255, 0.26) 0 1px 2px inset;
+}
+button:hover {
+  background-color: #b1ebf8; /* Darker Green background */
+  border-color: #dadce0;
+  box-shadow: rgba(0, 0, 0, .1) 0 1px 1px;
+}
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+#listening-indicator {
+  display: none;
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  background-color: #f39c12;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  z-index: 1000;
+}
+#filter-side {
+  height: fit-content;
+  width: fit-content;
+  box-shadow: 0px 0px 5px 3px rgba(52,194,199,1);
+  box-sizing: border-box;
+  padding: 10px;
+  margin-top: 60px;
+}
+#navigate-button {
+  padding: 20px 50px;
+}
+
+#top-instr {
+  font-size: large;
 }
