@@ -266,12 +266,12 @@ document.addEventListener("DOMContentLoaded", () => {
     function startListening(recognition) {
         const listeningIndicator = document.getElementById("listening-indicator");
         listeningIndicator.style.display = "block";
-        listeningIndicator.textContent = "Listening... 10s";
+        listeningIndicator.textContent = "Listening for 10s...";
 
         let countdown = 10;
         recognitionTimeout = setInterval(() => {
             countdown -= 1;
-            listeningIndicator.textContent = `Listening... ${countdown}s`;
+            listeningIndicator.textContent = `Listening for ${countdown}s...`;
             if (countdown <= 0) {
                 clearInterval(recognitionTimeout);
                 stopListening(recognition);
