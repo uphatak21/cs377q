@@ -220,31 +220,11 @@ document.addEventListener("DOMContentLoaded", () => {
     //     document.getElementById("listening-indicator").style.display = "block";
     // }
 
+    let recognitionTimeout;
+
     // function stopListening() {
     //     document.getElementById("listening-indicator").style.display = "none";
     // }
-
-    function startListening() {
-        const listeningIndicator = document.getElementById("listening-indicator");
-        listeningIndicator.style.display = "block";
-        listeningIndicator.textContent = "Listening... 10s";
-
-        let countdown = 10;
-        recognitionTimeout = setInterval(() => {
-            countdown -= 1;
-            listeningIndicator.textContent = `Listening... ${countdown}s`;
-            if (countdown <= 0) {
-                clearInterval(recognitionTimeout);
-            }
-        }, 1000);
-    }
-
-    function stopListening(recognition) {
-        clearInterval(recognitionTimeout);
-        recognition.stop();
-        const listeningIndicator = document.getElementById("listening-indicator");
-        listeningIndicator.style.display = "none";
-    }
 
     document.getElementById("voice-btn").addEventListener("click", async () => {
         const messageDiv = document.getElementById("message");
@@ -255,16 +235,47 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log("Microphone access granted");
 
             const recognition = new webkitSpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
             recognition.lang = "en-US";
+
             recognition.onstart = () => startListening();
             recognition.onerror = (event) => console.error("Recognition error:", event);
-            recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                document.getElementById("user-input").value = transcript;
-                saveState();
+            // recognition.onresult = (event) => {
+            //     const transcript = event.results[0][0].transcript;
+            //     document.getElementById("user-input").value = transcript;
+            //     saveState();
+            // };
+
+            // Create a variable to store the recognition result
+            let finalTranscript = '';
+
+            // Event handler for when recognition returns a result
+            recognition.onresult = function (event) {
+                let interimTranscript = '';
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                        document.getElementById("user-input").value = finalTranscript;
+                        saveState();
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                        // document.getElementById("user-input").value = interimTranscript;
+                        // saveState();
+                    }
+                }
+                // console.log('Interim result: ', interimTranscript);
             };
 
-            recognition.onend = () => stopListening();
+            // recognition.onend = () => stopListening();
+            recognition.onend = () => {
+                // Do nothing here because we want it to end only after 10 seconds
+            };
+
+            // recognition.onend = function() {
+            //     console.log('Recognition ended. Final transcript: ', finalTranscript);
+            //     alert('You said: ' + finalTranscript);
+            // };
             recognition.start();
 
             // Set a timeout to stop listening after 10 seconds (10000 ms)
@@ -284,37 +295,83 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    document.getElementById("voice-btn").addEventListener("click", async () => {
-        const messageDiv = document.getElementById("message");
+    function startListening(recognition) {
+        const listeningIndicator = document.getElementById("listening-indicator");
+        listeningIndicator.style.display = "block";
+        listeningIndicator.textContent = "Listening... 10s";
 
-        try {
-            console.log("Requesting microphone access...");
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            console.log("Microphone access granted");
-
-            const recognition = new webkitSpeechRecognition();
-            recognition.lang = "en-US";
-            recognition.onstart = () => startListening();
-            recognition.onerror = (event) => console.error("Recognition error:", event);
-            recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                document.getElementById("user-input").value = transcript;
-                saveState();
-            };
-
-            recognition.onend = () => stopListening();
-            recognition.start();
-        } catch (err) {
-            if (err.name === "NotAllowedError" || err.name === "SecurityError") {
-                messageDiv.textContent = "Microphone access denied. Please enable it in your browser settings.";
-            } else if (err.name === "PermissionDismissedError") {
-                messageDiv.textContent = "Microphone access dismissed. Please grant permission to use this feature.";
-            } else {
-                messageDiv.textContent = "Error accessing the microphone: " + err.message;
+        let countdown = 10;
+        recognitionTimeout = setInterval(() => {
+            countdown -= 1;
+            listeningIndicator.textContent = `Listening... ${countdown}s`;
+            if (countdown <= 0) {
+                clearInterval(recognitionTimeout);
+                stopListening(recognition);
             }
-            console.error("Error accessing the microphone", err);
-        }
-    });
+        }, 1000);
+    }
+
+    function stopListening(recognition) {
+        clearInterval(recognitionTimeout);
+        recognition.stop();
+        const listeningIndicator = document.getElementById("listening-indicator");
+        listeningIndicator.style.display = "none";
+    }
+
+    // document.getElementById("voice-btn").addEventListener("click", async () => {
+    //     const messageDiv = document.getElementById("message");
+
+    //     try {
+    //         console.log("Requesting microphone access...");
+    //         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    //         console.log("Microphone access granted");
+
+    //         const recognition = new webkitSpeechRecognition();
+    //         recognition.lang = "en-US";
+    //         recognition.interimResults = true;
+
+    //         let finalTranscript = '';
+
+    //         recognition.onstart = () => startListening(recognition);
+    //         recognition.onerror = (event) => console.error("Recognition error:", event);
+    //         recognition.onresult = (event) => {
+    //             for (let i = event.resultIndex; i < event.results.length; i++) {
+    //                 const transcript = event.results[i][0].transcript;
+    //                 if (event.results[i].isFinal) {
+    //                     finalTranscript += transcript;
+    //                 }
+    //             }
+    //             document.getElementById("user-input").value = finalTranscript;
+    //             // const listeningIndicator = document.getElementById("listening-indicator");
+    //             // listeningIndicator.textContent = "Speech detected, please wait...";
+    //             saveState();
+
+    //             // Reset the timer if new speech is detected
+    //             clearInterval(recognitionTimeout);
+    //             startListening(recognition);
+    //         };
+
+    //         recognition.start();
+
+    //         // Set a timeout to stop listening after 10 seconds (10000 ms)
+    //         setTimeout(() => {
+    //             stopListening(recognition);
+    //         }, 10000); // Adjust the duration as needed
+
+    //     } catch (err) {
+    //         if (err.name === "NotAllowedError" || err.name === "SecurityError") {
+    //             messageDiv.textContent = "Microphone access denied. Please enable it in your browser settings.";
+    //         } else if (err.name === "PermissionDismissedError") {
+    //             messageDiv.textContent = "Microphone access dismissed. Please grant permission to use this feature.";
+    //         } else {
+    //             messageDiv.textContent = "Error accessing the microphone: " + err.message;
+    //         }
+    //         console.error("Error accessing the microphone", err);
+    //     }
+    // });
+
+
+
 
     document.getElementById("open-welcome").addEventListener("click", () => {
         chrome.tabs.create({ url: chrome.runtime.getURL("welcome.html") });
