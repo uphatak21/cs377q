@@ -52,6 +52,42 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    async function sendInitial() {
+        // Send initial chat message
+        SYSTEM_PROMPT = `Repeat this exact message: "<p>Hi, I am ShopBot, your Amazon shopping assistant</p><p>Tell me the <b>exact item you want to shop</b> and I'll try to find it for you! I may not be exactly right but I will try.</p>
+            <p>Here are examples of what you could ask me to do:</p><ul><li>I want headphones under $20.</li><li>I want Apple headphones that are noise cancelling.</li><li>I want blue noise cancelling headphones.</li></ul>"`;
+        const botMessage = document.createElement("div");
+        botMessage.className = "message bot";
+        chatLog.appendChild(botMessage);
+        try {
+            const response = await fetch("https://api.openai.com/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer sk-proj-wpHnKm4mAg0c4p32Fd4eT3BlbkFJMshL5U0ajCnVbk9Uy8py`,
+                },
+                body: JSON.stringify({
+                    model: "gpt-4o",
+                    messages: conversationHistory.concat([
+                        { role: "system", content: SYSTEM_PROMPT },
+                        { role: "user", content: "Hi, I want to start shopping on Amazon."},
+                    ]),
+                }),
+            });
+            const data = await response.json();
+            let reply = data.choices[0].message.content;
+            //reply = reply.replace(/ *\[[^)]*\] */g, "");
+            botMessage.innerHTML = reply;
+            conversationHistory.push({ role: "assistant", content: botMessage.outerHTML });
+            localStorage.setItem("conversationHistory", JSON.stringify(conversationHistory));
+        } catch (error) {
+            botMessage.textContent = "Error: " + error.message;
+        }
+    }
+
+    if (conversationHistory.length == 0) {
+        sendInitial();
+    }
     async function sendMessage() {
         const userInput = document.getElementById("user-input").value;
 
