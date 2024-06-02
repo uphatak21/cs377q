@@ -216,12 +216,34 @@ document.addEventListener("DOMContentLoaded", () => {
         saveState();
     });
 
+    // function startListening() {
+    //     document.getElementById("listening-indicator").style.display = "block";
+    // }
+
+    // function stopListening() {
+    //     document.getElementById("listening-indicator").style.display = "none";
+    // }
+
     function startListening() {
-        document.getElementById("listening-indicator").style.display = "block";
+        const listeningIndicator = document.getElementById("listening-indicator");
+        listeningIndicator.style.display = "block";
+        listeningIndicator.textContent = "Listening... 10s";
+
+        let countdown = 10;
+        recognitionTimeout = setInterval(() => {
+            countdown -= 1;
+            listeningIndicator.textContent = `Listening... ${countdown}s`;
+            if (countdown <= 0) {
+                clearInterval(recognitionTimeout);
+            }
+        }, 1000);
     }
 
-    function stopListening() {
-        document.getElementById("listening-indicator").style.display = "none";
+    function stopListening(recognition) {
+        clearInterval(recognitionTimeout);
+        recognition.stop();
+        const listeningIndicator = document.getElementById("listening-indicator");
+        listeningIndicator.style.display = "none";
     }
 
     document.getElementById("voice-btn").addEventListener("click", async () => {
@@ -239,7 +261,44 @@ document.addEventListener("DOMContentLoaded", () => {
             recognition.onresult = (event) => {
                 const transcript = event.results[0][0].transcript;
                 document.getElementById("user-input").value = transcript;
-                sendMessage();
+                saveState();
+            };
+
+            recognition.onend = () => stopListening();
+            recognition.start();
+
+            // Set a timeout to stop listening after 10 seconds (10000 ms)
+            setTimeout(() => {
+                stopListening(recognition);
+            }, 10000); // Adjust the duration as needed
+
+        } catch (err) {
+            if (err.name === "NotAllowedError" || err.name === "SecurityError") {
+                messageDiv.textContent = "Microphone access denied. Please enable it in your browser settings.";
+            } else if (err.name === "PermissionDismissedError") {
+                messageDiv.textContent = "Microphone access dismissed. Please grant permission to use this feature.";
+            } else {
+                messageDiv.textContent = "Error accessing the microphone: " + err.message;
+            }
+            console.error("Error accessing the microphone", err);
+        }
+    });
+
+    document.getElementById("voice-btn").addEventListener("click", async () => {
+        const messageDiv = document.getElementById("message");
+
+        try {
+            console.log("Requesting microphone access...");
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            console.log("Microphone access granted");
+
+            const recognition = new webkitSpeechRecognition();
+            recognition.lang = "en-US";
+            recognition.onstart = () => startListening();
+            recognition.onerror = (event) => console.error("Recognition error:", event);
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById("user-input").value = transcript;
                 saveState();
             };
 
@@ -264,31 +323,14 @@ document.addEventListener("DOMContentLoaded", () => {
     var closePopup = document.getElementById("close-popup");
     var dialog = document.querySelector("dialog");
 
-    
-    document.getElementById("help-button").addEventListener("click", () => {   
+
+    document.getElementById("help-button").addEventListener("click", () => {
         dialog.showModal();
     });
 
-    document.getElementById("close-modal").addEventListener("click", () => {   
+    document.getElementById("close-modal").addEventListener("click", () => {
         dialog.close();
     });
-
-    // document
-    //     .getElementById("navigate-button")
-    //     .addEventListener("keydown", (event) => {
-    //         if (event.key === "Enter") {
-    //             let value = navigateButton.innerText;
-    //             var chatBox = document.getElementById("chat-box");
-    //             console.log(value);
-    //             if (value == "Let's Chat!") {
-    //                 chatBox.style.display = "block";
-    //                 filterSide.style.display = "none";
-    //                 pillContain.style.display = "none";
-    //                 navigateButton.innerText = "View Instructions";
-    //                 chatInput.focus();
-    //             }
-    //         }
-    //     });
 
     closePopup.onclick = function () {
         window.close();
