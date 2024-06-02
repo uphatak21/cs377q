@@ -149,20 +149,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.log(`url match: ${urlMatch}`);
                 console.log(`url: ${url}`);
 
-                // Replace URLs with buttons
-                // reply = reply.replace(
-                //     urlPattern,
-                //     (url) =>
-                //         `<a class="hyperlink" href="${url}" target="_blank">Link</a>`
-                // );
-
-                // `<div class="button-container"><button class="link-button" data-url="${url}">${product}</button></div>`
-
                 // Set the modified reply as innerHTML to render the links
                 const newBotReply = reply.replace(/: \[([^[\]]+)\]\(/, "");
                 console.log(newBotReply);
-
-
 
                 botMessage.innerHTML = newBotReply;
 
@@ -216,13 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
         saveState();
     });
 
-    function startListening() {
-        document.getElementById("listening-indicator").style.display = "block";
-    }
-
-    function stopListening() {
-        document.getElementById("listening-indicator").style.display = "none";
-    }
+    let recognitionTimeout;
 
     document.getElementById("voice-btn").addEventListener("click", async () => {
         const messageDiv = document.getElementById("message");
@@ -233,18 +216,41 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log("Microphone access granted");
 
             const recognition = new webkitSpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
             recognition.lang = "en-US";
+
             recognition.onstart = () => startListening();
             recognition.onerror = (event) => console.error("Recognition error:", event);
-            recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                document.getElementById("user-input").value = transcript;
-                sendMessage();
-                saveState();
+
+            // Create a variable to store the recognition result
+            let finalTranscript = '';
+
+            // Event handler for when recognition returns a result
+            recognition.onresult = function (event) {
+                let interimTranscript = '';
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                        document.getElementById("user-input").value = finalTranscript;
+                        saveState();
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
             };
 
-            recognition.onend = () => stopListening();
+            recognition.onend = () => {
+                // Do nothing here because we want it to end only after 10 seconds
+            };
+
             recognition.start();
+
+            // Set a timeout to stop listening after 10 seconds (10000 ms)
+            setTimeout(() => {
+                stopListening(recognition);
+            }, 10000); // Adjust the duration as needed
+
         } catch (err) {
             if (err.name === "NotAllowedError" || err.name === "SecurityError") {
                 messageDiv.textContent = "Microphone access denied. Please enable it in your browser settings.";
@@ -257,6 +263,29 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    function startListening(recognition) {
+        const listeningIndicator = document.getElementById("listening-indicator");
+        listeningIndicator.style.display = "block";
+        listeningIndicator.textContent = "Listening... 10s";
+
+        let countdown = 10;
+        recognitionTimeout = setInterval(() => {
+            countdown -= 1;
+            listeningIndicator.textContent = `Listening... ${countdown}s`;
+            if (countdown <= 0) {
+                clearInterval(recognitionTimeout);
+                stopListening(recognition);
+            }
+        }, 1000);
+    }
+
+    function stopListening(recognition) {
+        clearInterval(recognitionTimeout);
+        recognition.stop();
+        const listeningIndicator = document.getElementById("listening-indicator");
+        listeningIndicator.style.display = "none";
+    }
+
     document.getElementById("open-welcome").addEventListener("click", () => {
         chrome.tabs.create({ url: chrome.runtime.getURL("welcome.html") });
     });
@@ -264,31 +293,14 @@ document.addEventListener("DOMContentLoaded", () => {
     var closePopup = document.getElementById("close-popup");
     var dialog = document.querySelector("dialog");
 
-    
-    document.getElementById("help-button").addEventListener("click", () => {   
+
+    document.getElementById("help-button").addEventListener("click", () => {
         dialog.showModal();
     });
 
-    document.getElementById("close-modal").addEventListener("click", () => {   
+    document.getElementById("close-modal").addEventListener("click", () => {
         dialog.close();
     });
-
-    // document
-    //     .getElementById("navigate-button")
-    //     .addEventListener("keydown", (event) => {
-    //         if (event.key === "Enter") {
-    //             let value = navigateButton.innerText;
-    //             var chatBox = document.getElementById("chat-box");
-    //             console.log(value);
-    //             if (value == "Let's Chat!") {
-    //                 chatBox.style.display = "block";
-    //                 filterSide.style.display = "none";
-    //                 pillContain.style.display = "none";
-    //                 navigateButton.innerText = "View Instructions";
-    //                 chatInput.focus();
-    //             }
-    //         }
-    //     });
 
     closePopup.onclick = function () {
         window.close();

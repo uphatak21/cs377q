@@ -104,13 +104,16 @@
       #listening-indicator {
         display: none;
         position: fixed;
-        bottom: 10px;
-        right: 10px;
-        background-color: #f39c12;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
         color: white;
-        padding: 10px 20px;
-        border-radius: 5px;
-        z-index: 1000;
+        font-size: 3em;
+        text-align: center;
+        line-height: 100vh;
+        z-index: 9999;
       }
       #filter-side {
         height: fit-content;
@@ -128,7 +131,7 @@
   </head>
   <body>
     <div id="top-buttons">
-        <button id="help-button">help</button>
+        <button id="help-button">Help</button>
         <button id="close-popup"></button>
     </div>
     <div id="chat-container">
@@ -159,29 +162,26 @@
         <div id="message"></div>
       </div>
       <dialog id="help-modal">
-      <button id="close-modal" class="close">x</button>
-      <p class="instr" id="filter-side"> What should I filter for? Look at Amazon's filter bar
-        on the left-side of your screen after you search. There are a bunch of filter options!
-      </p>
-      <br />
-      <p class="instr"> <b>Chat Examples</b></p>
-      <hr />
-      <div id="pill-container">
-        <div id="pill" class="instr">
-          "I want headphones that are noise cancelling"
+        <button id="close-modal" class="close">x</button>
+        <br />
+        <p class="instr"> <b>Chat Examples</b></p>
+        <hr />
+        <div id="pill-container">
+          <div id="pill" class="instr">
+            "I want headphones that are noise cancelling"
+          </div>
+          <div id="pill" class="instr">"I want blue headphones"</div>
+          <div id="pill" class="instr">
+            "I want headphones that can be delivered tomorrow"
+          </div>
+          <div id="pill" class="instr">"I want headphones under $20"</div>
+          <div id="pill" class="instr">
+            "I want headphones that are only 5 stars"
+          </div>
+          <div id="pill" class="instr">
+            "I want headphones that do Prime delivery"
+          </div>
         </div>
-        <div id="pill" class="instr">"I want blue headphones"</div>
-        <div id="pill" class="instr">
-          "I want headphones that can be delivered tomorrow"
-        </div>
-        <div id="pill" class="instr">"I want headphones under $20"</div>
-        <div id="pill" class="instr">
-          "I want headphones that are only 5 stars"
-        </div>
-        <div id="pill" class="instr">
-          "I want headphones that do Prime delivery"
-        </div>
-      </div>
      </dialog>
       <p class="instr" > Try this keyboard shortcut to open and close the bot without clicking: <br /><br />
         <b> Command/Control + Shift + 'Y'</b>
