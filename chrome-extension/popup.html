@@ -143,27 +143,31 @@
       <div id="chat-box">
         <div id="chat-log"></div>
         <div id="send-bar">
-          <input type="text" id="user-input" placeholder="Type a message..." />
+          <textarea wrap="soft" id="user-input" rows="2" cols="50" placeholder="Type a message..."></textarea>
+          <button id="send-btn" class="buttons"><i class="material-icons">send</i>Send</button>
           <button id="voice-btn" class="buttons">
             <i class="material-icons">mic</i>
             <br>Voice Input
           </button>
-          <button id="send-btn" class="buttons"><i class="material-icons">send</i>Send</button>
-        </div>
-        <div id="actions-bar">
           <button id="clear-btn" class="buttons">
             <i class="material-icons">clear_all</i>
             <br>Clear Chat
           </button>
         </div>
-        <button id="open-welcome" class="buttons">
-          Grant Speech Permissions
-        </button>
+        <div id="actions-bar">
+          
+        </div>
         <div id="message"></div>
       </div>
       <dialog id="help-modal">
         <button id="close-modal" class="close">x</button>
         <br />
+        <div class="instr">
+          <p>If your speech input is not working, please click here:</p>
+          <button id="open-welcome" class="buttons">
+            Grant Speech Permissions
+          </button>
+        </div>
         <p class="instr"> <b>Chat Examples</b></p>
         <hr />
         <div id="pill-container">
