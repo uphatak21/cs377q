@@ -3,7 +3,11 @@
     "name": "Shopbot",
     "version": "1.0",
     "description": "A GPT-powered Chrome extension to make Amazon shopping easier.",
+    "side_panel": {
+      "default_path": "popup.html"
+    },
     "action": {
+      "default title": "Click to open panel",
       "default_popup": "popup.html",
       "default_icon": {
         "16": "robot.png"
@@ -13,7 +17,8 @@
       "storage",
       "activeTab",
       "tabs",
-      "scripting"
+      "scripting",
+      "sidePanel"
     ],
     "host_permissions": ["<all_urls>"],
     "background": {

@@ -3,3 +3,7 @@ chrome.commands.onCommand.addListener((command) => {
         chrome.action.openPopup();
     }
 });
+
+chrome.sidePanel
+  .setPanelBehavior({ openPanelOnActionClick: true })
+  .catch((error) => console.error(error));
