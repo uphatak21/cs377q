@@ -63,13 +63,28 @@
 
   .instr {
     color: #15595B;
-    font-size: 16px;
+    font-size: 18px;
     margin-bottom: 0px;
+    text-align: center;
+    width: auto;
+  }
+
+  .title {
+    color: #15595B;
+    font-size: 22px;
+    margin-bottom: 0px;
+    text-align: center;
+    width: auto;
   }
   
   .message {
     padding: 5px;
     margin: 5px 0;
+  }
+
+  img {
+    width: 40%;
+    height: 40%;
   }
   
   .message.user {
@@ -163,11 +178,15 @@
 
 #help-modal {
   padding: 20px;
-  width: 80%;
+  width: 90%;
+  border-radius: 5px;
+  border: 1px rgba(0, 0, 0, 0.16);
+  box-sizing: border-box;
 }
 
 #close-modal {
-  float: right;
+  right: 5%;
+  position: absolute;
   width: 20px;
   height: 20px;
   background-color: transparent;
