@@ -6,7 +6,9 @@
     "action": {
       "default_popup": "popup.html",
       "default_icon": {
-        "16": "robot.png"
+        "16": "robot.png",
+        "48": "robot.png",
+        "128": "robot.png"
       }
     },
     "permissions": [
