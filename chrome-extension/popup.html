@@ -29,6 +29,7 @@
         box-sizing: border-box;
         border-radius: 5px;
         text-align: center;
+        background-color: rgba(0, 0, 0, 0.07);
         box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
         display: flex;
         align-items: center;
@@ -161,34 +162,49 @@
       </div>
       <dialog id="help-modal">
         <button id="close-modal" class="close">x</button>
-        <br />
+        <div class="title"><br /><p><b>Questions</b></p></div>
+        <hr />
         <div class="instr">
-          <p>If your speech input is not working, please click here:</p>
+          <p><b>Why is my "Voice Input" is not working?</b></p>
+          <p>Try clicking this button</p>
           <button id="open-welcome" class="buttons">
             Grant Speech Permissions
           </button>
         </div>
-        <p class="instr"> <b>Chat Examples</b></p>
+        <br />
         <hr />
-        <div id="pill-container">
-          <div id="pill" class="instr">
-            "I want headphones that are noise cancelling"
+        <div>
+          <div class="instr">
+            <p><b>What do I ask the bot for?</b></p>
+            <p>Here are examples:</p>
           </div>
-          <div id="pill" class="instr">"I want blue headphones"</div>
-          <div id="pill" class="instr">
-            "I want headphones that can be delivered tomorrow"
+          <div id="pill-container">
+            <div id="pill" class="instr">
+              "I want headphones that are noise cancelling"
+            </div>
+            <div id="pill" class="instr">"I want blue headphones"</div>
+            <div id="pill" class="instr">
+              "I want headphones that can be delivered tomorrow"
+            </div>
+            <div id="pill" class="instr">"I want headphones under $20"</div>
+            <div id="pill" class="instr">
+              "I want headphones that are only 5 stars"
+            </div>
+            <div id="pill" class="instr">
+              "I want headphones that do Prime delivery"
+            </div>
           </div>
-          <div id="pill" class="instr">"I want headphones under $20"</div>
-          <div id="pill" class="instr">
-            "I want headphones that are only 5 stars"
-          </div>
-          <div id="pill" class="instr">
-            "I want headphones that do Prime delivery"
-          </div>
-        </div>
+      </div>
+      <div class="instr">
+        <p><b>How can I open the bot without clicking?</b></p>
+        <p>Try out this keyboard shortcut.</p>
+        
+      </div>
      </dialog>
-      <p class="instr" > Try this keyboard shortcut to open and close the bot without clicking: <br /><br />
-        <b> Command/Control + Shift + 'Y'</b>
+      <p class="instr" > Hard to open the bot? Try this keyboard shortcut: <br /><br />
+        <b> Command + 'B'</b>
+        <br /><br />
+        <i>Remember 'B' for Bot!</i>
       </p>
     </div>
 
