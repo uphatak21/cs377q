@@ -74,7 +74,9 @@ document.addEventListener("DOMContentLoaded", () => {
             Handle the following edge cases as follows:
             1. **Ambiguous Input**: If the user's input is ambiguous or incomplete, ask them clarifying questions to ensure you generate the correct Amazon link.
             2. **Unavailable Product**: If the specified product is unavailable or cannot be found, suggest similar alternatives available on Amazon.
-            3. **General Error Handling**: If an error occurs or you cannot fulfill the request, apologize and ask the user to rephrase or provide more details.`;
+            3. **General Error Handling**: If an error occurs or you cannot fulfill the request, apologize and ask the user to rephrase or provide more details.
+            4. **Multiple items** If the user asks you for suggestions on what to get and you respond with a list, also clarify that they need to select one type of item before you can guide them further.`;
+            
 
             // Send user input to OpenAI API
             const botMessage = document.createElement("div");
