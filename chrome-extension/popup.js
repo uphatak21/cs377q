@@ -60,6 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
             userMessage.className = "message user";
             userMessage.textContent = userInput;
             chatLog.appendChild(userMessage);
+            scrollToBottom();
 
             conversationHistory.push({ role: "user", content: userInput });
             localStorage.setItem("conversationHistory", JSON.stringify(conversationHistory));
@@ -83,6 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
             botMessage.className = "message bot";
             botMessage.textContent = "Thinking...";
             chatLog.appendChild(botMessage);
+            scrollToBottom();
 
             try {
                 const response = await fetch("https://api.openai.com/v1/chat/completions", {
