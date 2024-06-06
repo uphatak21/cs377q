@@ -201,3 +201,9 @@
   font-weight: bold;
   color: #000;
 }
+
+/* Specific rule to remove blur from the main content and filter bar */
+.a-section { /* Adjust these selectors based on your inspection */
+  filter: blur(5px);
+  transition: filter 0.3s ease;
+}
